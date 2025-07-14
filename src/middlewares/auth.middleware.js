@@ -1,9 +1,5 @@
 import jwt from 'jsonwebtoken';
-import {
-  MESSAGES,
-  ROLE_PERMISSIONS,
-  STATUS_CODES
-} from '../constants/index.js';
+import { MESSAGES, STATUS_CODES } from '../constants/index.js';
 import Users from '../models/user.model.js';
 import { asyncHandler, handleError } from '../utils/index.js';
 import { ACCESS_TOKEN_SECRET } from '../configs/env.config.js';
@@ -44,47 +40,3 @@ export const verifyJWT = (roles = []) =>
       );
     }
   });
-
-export function checkPermission(module, action) {
-  return (req, res, next) => {
-    const user = req.user;
-
-    if (!user || !user.role) {
-      return handleError(
-        next,
-        'User not authenticated or role missing',
-        STATUS_CODES.UNAUTHORIZED
-      );
-    }
-
-    const permissions = ROLE_PERMISSIONS[user.role];
-    if (!permissions) {
-      return handleError(
-        next,
-        'No permissions defined for this role',
-        STATUS_CODES.FORBIDDEN
-      );
-    }
-
-    const modulePerms = permissions.find((p) => p.startsWith(`${module}:`));
-    if (!modulePerms) {
-      return handleError(
-        next,
-        `Access denied to module: ${module}`,
-        STATUS_CODES.FORBIDDEN
-      );
-    }
-
-    const allowedActions = modulePerms.split(':')[1].split('/');
-
-    if (!allowedActions.includes(action)) {
-      return handleError(
-        next,
-        `You don't have ${action} permission on ${module}`,
-        STATUS_CODES.FORBIDDEN
-      );
-    }
-
-    next();
-  };
-}
