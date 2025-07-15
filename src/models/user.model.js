@@ -37,9 +37,14 @@ const UserSchema = new Schema({
   },
   passwordHistory: [{ type: String }],
   lastPasswordChange: { type: Date },
-  failedLoginAttempts: { type: Number, default: 0 },
-  accountLocked: { type: Boolean, default: false },
-  lockTime: { type: Date },
+  loginAttempts: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  lockUntil: {
+    type: Date
+  },
   isAccountActive: {
     type: Boolean,
     default: false
@@ -68,6 +73,10 @@ UserSchema.methods.generateAccessToken = function () {
       expiresIn: ACCESS_TOKEN_EXPIRY
     }
   );
+};
+
+UserSchema.methods.isAccountLocked = function () {
+  return this.lockUntil && this.lockUntil > Date.now();
 };
 
 const User = model('User', UserSchema);

@@ -7,7 +7,7 @@ const sendResponse = (res, statusCode, message, data = {}) => {
     .json(new ApiResponse(statusCode, message, data));
 };
 
-const handleError = (next, errorMessage, statusCode) => {
+const handleError = (next, statusCode, errorMessage) => {
   return next(new ApiError(statusCode, errorMessage));
 };
 

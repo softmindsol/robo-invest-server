@@ -7,6 +7,7 @@ import {
 import { userDB } from '../instances/db.instance.js';
 import { MESSAGES, STATUS_CODES } from '../constants/index.js';
 import { createOTPWithExpiry } from '../helper/generateOtp.js';
+import { LOCK_TIME, MAX_LOGIN_ATTEMPTS } from '../configs/env.config.js';
 
 const register = asyncHandler(async (req, res) => {
   const { email, username } = req.body;
@@ -82,14 +83,34 @@ const resendOTP = asyncHandler(async (req, res, next) => {
   sendResponse(res, STATUS_CODES.SUCCESS, `New OTP sent to ${user.email}`, otp);
 });
 
-const login = asyncHandler(async (req, res) => {
+const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   const user = await userDB.findOne({ email }, '+password');
   checkField(!user, 'Invalid email or password');
 
+  if (user.isAccountLocked()) {
+    handleError(
+      next,
+      STATUS_CODES.FORBIDDEN,
+      'Account is temporarily locked due to multiple failed login attempts. Please try again later.'
+    );
+  }
+
   const isPasswordCorrect = await user.isPasswordCorrect(password);
-  checkField(!isPasswordCorrect, 'Invalid email or password');
+  if (!isPasswordCorrect) {
+    user.loginAttempts += 1;
+
+    if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+      user.lockUntil = new Date(Date.now() + LOCK_TIME);
+    }
+
+    await user.save();
+    checkField(!isPasswordCorrect, 'Invalid email or password');
+  }
+
+  user.loginAttempts = 0;
+  user.lockUntil = undefined;
 
   const accessToken = user.generateAccessToken();
   user.accessToken.push(accessToken);
