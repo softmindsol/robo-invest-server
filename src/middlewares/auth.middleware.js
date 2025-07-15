@@ -9,34 +9,22 @@ export const verifyJWT = (roles = []) =>
     try {
       const token = req.headers.authorization?.split(' ')[1];
       if (!token) {
-        return handleError(
-          next,
-          MESSAGES.UNAUTHORIZED,
-          STATUS_CODES.UNAUTHORIZED
-        );
+        handleError(next, STATUS_CODES.UNAUTHORIZED, MESSAGES.UNAUTHORIZED);
       }
       const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET);
-
       const user = await Users.findById(decodedToken?._id).select('-password');
 
       if (!user) {
-        return handleError(
-          next,
-          MESSAGES.UNAUTHORIZED,
-          STATUS_CODES.UNAUTHORIZED
-        );
+        handleError(next, STATUS_CODES.UNAUTHORIZED, MESSAGES.UNAUTHORIZED);
       }
-      if (roles.includes(user?.role)) {
-        req.user = user;
-        next();
-      } else {
-        return handleError(next, MESSAGES.FORBIDDEN, STATUS_CODES.FORBIDDEN);
+      if (roles.length && !roles.includes(user.role)) {
+        return handleError(next, STATUS_CODES.FORBIDDEN, MESSAGES.FORBIDDEN);
       }
+
+      req.user = user;
+
+      next();
     } catch {
-      return handleError(
-        next,
-        MESSAGES.UNAUTHORIZED,
-        STATUS_CODES.UNAUTHORIZED
-      );
+      handleError(next, STATUS_CODES.UNAUTHORIZED, MESSAGES.UNAUTHORIZED);
     }
   });

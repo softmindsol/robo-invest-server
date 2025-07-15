@@ -36,6 +36,9 @@ export const MESSAGES = {
 };
 
 export const ROLES = {
-  RPO: 'Pro',
-  ELITE: 'Elite'
+  USER: 'User',
+  ADMIN: 'Admin'
 };
+
+export const MAX_LOGIN_ATTEMPTS = 5; // Maximum allowed login attempts
+export const LOCK_TIME = 30 * 60 * 1000; // 30 minutes in milliseconds

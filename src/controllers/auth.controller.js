@@ -5,9 +5,13 @@ import {
   sendResponse
 } from '../utils/index.js';
 import { userDB } from '../instances/db.instance.js';
-import { MESSAGES, STATUS_CODES } from '../constants/index.js';
+import {
+  LOCK_TIME,
+  MAX_LOGIN_ATTEMPTS,
+  MESSAGES,
+  STATUS_CODES
+} from '../constants/index.js';
 import { createOTPWithExpiry } from '../helper/generateOtp.js';
-import { LOCK_TIME, MAX_LOGIN_ATTEMPTS } from '../configs/env.config.js';
 
 const register = asyncHandler(async (req, res) => {
   const { email, username } = req.body;
@@ -135,4 +139,11 @@ const logout = asyncHandler(async (req, res) => {
   sendResponse(res, STATUS_CODES.SUCCESS, 'User Logged out Successfully');
 });
 
-export { register, login, logout, verifyEmail, resendOTP };
+const test = (req, res) => {
+  res.status(200).json({
+    message: 'This is a test endpoint.',
+    user: req.user // `req.user` will be populated by `verifyJWT`
+  });
+};
+
+export { register, login, logout, verifyEmail, resendOTP, test };
