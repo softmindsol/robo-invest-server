@@ -1,8 +1,4 @@
 export const AUTH_CONSTANTS = {
-  OTP_EXPIRY: 2 * 60 * 1000,
-  OTP_LENGTH: 6,
-  OTP_MIN: 100000,
-  OTP_MAX: 999999,
   RATE_LIMIT_MINUTES: 2,
   EMAIL_REGEX: /^\S+@\S+\.\S+$/
 };

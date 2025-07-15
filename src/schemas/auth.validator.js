@@ -68,4 +68,17 @@ const resendOTPSchema = Joi.object({
   })
 });
 
-export { registerSchema, loginSchema, verifyEmailSchema, resendOTPSchema };
+const accountTypeSchema = Joi.object({
+  accountType: Joi.string().valid('Normal', 'Sahulat').required().messages({
+    'any.required': 'Account type is required',
+    'string.valid': 'Account type must be either "Normal" or "Sahulat"'
+  })
+});
+
+export {
+  registerSchema,
+  loginSchema,
+  verifyEmailSchema,
+  resendOTPSchema,
+  accountTypeSchema
+};

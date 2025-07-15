@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { addValidation } from '../utils/index.js';
 import {
+  accountTypeSchema,
   loginSchema,
   registerSchema,
   resendOTPSchema,
   verifyEmailSchema
 } from '../schemas/auth.validator.js';
 import {
+  addAccountType,
   login,
   logout,
   register,
@@ -26,6 +28,13 @@ router.post(
   addValidation(resendOTPSchema),
   rateLimiter,
   resendOTP
+);
+
+router.post(
+  '/account-type',
+  addValidation(accountTypeSchema),
+  verifyJWT([ROLES.USER]),
+  addAccountType
 );
 
 router.post('/login', addValidation(loginSchema), login);

@@ -139,11 +139,26 @@ const logout = asyncHandler(async (req, res) => {
   sendResponse(res, STATUS_CODES.SUCCESS, 'User Logged out Successfully');
 });
 
-const test = (req, res) => {
-  res.status(200).json({
-    message: 'This is a test endpoint.',
-    user: req.user // `req.user` will be populated by `verifyJWT`
-  });
-};
+const addAccountType = asyncHandler(async (req, res) => {
+  const { accountType } = req.body;
+  const userId = req.user._id;
 
-export { register, login, logout, verifyEmail, resendOTP, test };
+  const user = await userDB.findById(userId);
+  checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+  checkField(
+    user.accountType,
+    `Account type is already set to '${user.accountType}'. You cannot change it again.`
+  );
+
+  user.accountType = accountType;
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'User account type updated successfully'
+  );
+});
+
+export { register, login, logout, verifyEmail, resendOTP, addAccountType };
