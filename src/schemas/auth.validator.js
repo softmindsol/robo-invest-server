@@ -22,7 +22,7 @@ const registerSchema = Joi.object({
 
   password: Joi.string()
     .trim()
-    .min(8)
+    .min(10)
     .max(128)
     .pattern(
       new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])')
@@ -30,7 +30,7 @@ const registerSchema = Joi.object({
     .required()
     .messages({
       'string.empty': 'Password is required',
-      'string.min': 'Password must be at least 8 characters long',
+      'string.min': 'Password must be at least 10 characters long',
       'string.max': 'Password must not exceed 128 characters',
       'string.pattern.base':
         'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character'
@@ -43,21 +43,29 @@ const loginSchema = Joi.object({
     'string.email': 'Email must be a valid email address'
   }),
 
-  password: Joi.string()
-    .trim()
-    .min(8)
-    .max(128)
-    .pattern(
-      new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])')
-    )
-    .required()
-    .messages({
-      'string.empty': 'Password is required',
-      'string.min': 'Password must be at least 8 characters long',
-      'string.max': 'Password must not exceed 128 characters',
-      'string.pattern.base':
-        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character'
-    })
+  password: Joi.string().trim().min(10).required().messages({
+    'string.empty': 'Password is required',
+    'string.min': 'Password must be at least 10 characters long'
+  })
 });
 
-export { registerSchema, loginSchema };
+const verifyEmailSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Email is required',
+    'string.email': 'Please provide a valid email address'
+  }),
+  otp: Joi.string().length(6).pattern(/^\d+$/).required().messages({
+    'string.empty': 'OTP is required',
+    'string.length': 'OTP must be exactly 6 digits',
+    'string.pattern.base': 'OTP must contain only numbers'
+  })
+});
+
+const resendOTPSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Email is required',
+    'string.email': 'Please provide a valid email address'
+  })
+});
+
+export { registerSchema, loginSchema, verifyEmailSchema, resendOTPSchema };

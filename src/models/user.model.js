@@ -16,6 +16,10 @@ const UserSchema = new Schema({
     type: [String],
     default: []
   },
+  accountType: {
+    type: String,
+    enum: ['Normal', 'Sahulat']
+  },
   emailVerification: {
     otp: {
       type: String
@@ -30,6 +34,15 @@ const UserSchema = new Schema({
       type: Boolean,
       default: false
     }
+  },
+  passwordHistory: [{ type: String }],
+  lastPasswordChange: { type: Date },
+  failedLoginAttempts: { type: Number, default: 0 },
+  accountLocked: { type: Boolean, default: false },
+  lockTime: { type: Date },
+  isAccountActive: {
+    type: Boolean,
+    default: false
   }
 });
 
