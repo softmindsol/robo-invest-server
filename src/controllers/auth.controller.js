@@ -165,7 +165,6 @@ const addPersonalDetails = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const personalDetails = req.body;
   const documents = req.files;
-  console.log('🚀 ~ addPersonalDetails ~ documents:', documents);
 
   const user = await userDB.findById(userId);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
@@ -181,14 +180,31 @@ const addPersonalDetails = asyncHandler(async (req, res) => {
   user.personalDetails.uploadFrontSideOfCNIC = frontCNICImage;
   user.personalDetails.uploadBackSideOfCNIC = backCNICImage;
 
-  Object.assign(user.personalDetails, personalDetails);
-
+  user.personalDetails = personalDetails;
   await user.save();
 
   sendResponse(
     res,
     STATUS_CODES.SUCCESS,
     'Personal details updated successfully'
+  );
+});
+
+const addFinancialDetails = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const financialDetails = req.body;
+
+  const user = await userDB.findById(userId);
+  checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+  user.financialDetails = financialDetails;
+
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'Financial details updated successfully'
   );
 });
 
@@ -199,5 +215,6 @@ export {
   verifyEmail,
   resendOTP,
   addAccountType,
-  addPersonalDetails
+  addPersonalDetails,
+  addFinancialDetails
 };

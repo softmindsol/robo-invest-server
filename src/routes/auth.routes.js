@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { addValidation } from '../utils/index.js';
 import {
   accountTypeSchema,
+  financialDetailsSchema,
   loginSchema,
   personalDetailsSchema,
   registerSchema,
@@ -10,6 +11,7 @@ import {
 } from '../schemas/auth.validator.js';
 import {
   addAccountType,
+  addFinancialDetails,
   addPersonalDetails,
   login,
   logout,
@@ -52,6 +54,15 @@ router.post(
   ]),
   addValidation(personalDetailsSchema),
   addPersonalDetails
+);
+
+router.post(
+  '/financial-details',
+  verifyJWT([ROLES.USER]),
+  addValidation(financialDetailsSchema, (req) => {
+    return { accountType: req.user.accountType };
+  }),
+  addFinancialDetails
 );
 
 router.post('/login', addValidation(loginSchema), login);

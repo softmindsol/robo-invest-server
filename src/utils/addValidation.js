@@ -1,8 +1,9 @@
 import ApiError from './ApiError.js';
 
-function addValidation(schema) {
+function addValidation(schema, getContext) {
   return (req, res, next) => {
-    const { error } = schema?.validate(req.body || {});
+    const context = getContext ? getContext(req) : {};
+    const { error } = schema.validate(req.body || {}, { context });
 
     if (error) {
       const errorMessage = error.details.map((err) => err.message).join(', ');

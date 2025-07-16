@@ -5,7 +5,6 @@ import {
   ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRY
 } from '../configs/env.config.js';
-
 const { Schema, model } = mongoose;
 
 const UserSchema = new Schema({
@@ -83,6 +82,24 @@ const UserSchema = new Schema({
         return this.accountType === 'Sahulat';
       }
     }
+  },
+  financialDetails: {
+    occupation: { type: String },
+    occupationIndustry: { type: String },
+    incomeSource: { type: String },
+    employerAddress: { type: String },
+    employerCountry: { type: String },
+    yearsEmployed: { type: Number },
+    salaryAmount: { type: Number },
+    grossAnnualIncome: { type: Number }, // Only for Normal
+    numberOfDependents: { type: Number }, // Only for Normal
+    proofOfIncome: { type: String }, // Only for Normal
+    proofOfEmployment: { type: String }, // Only for Normal
+    companyLetterhead: { type: String }, // Only for Normal
+    taxFilingStatus: { type: Boolean, default: false },
+    NTN: { type: String },
+    deductZakat: { type: Boolean, default: false },
+    existingInvestmentAccount: { type: Boolean, default: false }
   }
 });
 
@@ -101,7 +118,8 @@ UserSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      role: this.role
+      role: this.role,
+      accountType: this.accountType
     },
     ACCESS_TOKEN_SECRET,
     {

@@ -200,11 +200,36 @@ const personalDetailsSchema = Joi.object({
     .optional()
 });
 
+const financialDetailsSchema = Joi.object({
+  occupation: Joi.string().required(),
+  occupationIndustry: Joi.string().required(),
+  incomeSource: Joi.string().required(),
+  employerAddress: Joi.string().required(),
+  employerCountry: Joi.string().required(),
+  yearsEmployed: Joi.number().min(0).required(),
+  salaryAmount: Joi.number().min(0).required(),
+  grossAnnualIncome: Joi.when('$accountType', {
+    is: 'Normal',
+    then: Joi.number().min(0).required(),
+    otherwise: Joi.forbidden()
+  }),
+  numberOfDependents: Joi.when('$accountType', {
+    is: 'Normal',
+    then: Joi.number().min(0).required(),
+    otherwise: Joi.forbidden()
+  }),
+  taxFilingStatus: Joi.boolean().required(),
+  NTN: Joi.string().allow('', null),
+  deductZakat: Joi.boolean().default(false),
+  existingInvestmentAccount: Joi.boolean().required()
+});
+
 export {
   registerSchema,
   loginSchema,
   verifyEmailSchema,
   resendOTPSchema,
   accountTypeSchema,
-  personalDetailsSchema
+  personalDetailsSchema,
+  financialDetailsSchema
 };
