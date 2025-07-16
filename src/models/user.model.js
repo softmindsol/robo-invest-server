@@ -40,8 +40,6 @@ const UserSchema = new Schema({
       default: false
     }
   },
-  passwordHistory: [{ type: String }],
-  lastPasswordChange: { type: Date },
   loginAttempts: {
     type: Number,
     required: true,
@@ -53,6 +51,38 @@ const UserSchema = new Schema({
   isAccountActive: {
     type: Boolean,
     default: false
+  },
+  personalDetails: {
+    firstName: { type: String },
+    lastName: { type: String },
+    CNICNumber: { type: String, unique: true },
+    issueDate: { type: Date },
+    expireDate: { type: Date },
+    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
+    maritalStatus: {
+      type: String,
+      enum: ['Single', 'Married', 'Divorced', 'Widowed']
+    },
+    dateOfBirth: { type: Date },
+    permanentAddress: { type: String },
+    fathersOrHusbandsName: {
+      selection: { type: String, enum: ['Father', 'Husband'] },
+      name: { type: String }
+    },
+    mothersName: { type: String },
+    phoneNumber: { type: String },
+    placeOfBirth: { type: String },
+    nationality: { type: String },
+    uploadFrontSideOfCNIC: { type: String },
+    uploadBackSideOfCNIC: { type: String },
+    dualNationality: { type: Boolean },
+    isPakistaniResident: {
+      type: Boolean,
+      default: false,
+      required: function () {
+        return this.accountType === 'Sahulat';
+      }
+    }
   }
 });
 

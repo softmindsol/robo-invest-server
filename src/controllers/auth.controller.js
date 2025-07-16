@@ -161,4 +161,43 @@ const addAccountType = asyncHandler(async (req, res) => {
   );
 });
 
-export { register, login, logout, verifyEmail, resendOTP, addAccountType };
+const addPersonalDetails = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const personalDetails = req.body;
+  const documents = req.files;
+  console.log('🚀 ~ addPersonalDetails ~ documents:', documents);
+
+  const user = await userDB.findById(userId);
+  checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+  const frontCNICImage = documents['frontSide'][0]?.filename;
+  const backCNICImage = documents['backSide'][0]?.filename;
+
+  checkField(
+    !frontCNICImage || !backCNICImage,
+    'Both front and back CNIC images must be uploaded'
+  );
+
+  user.personalDetails.uploadFrontSideOfCNIC = frontCNICImage;
+  user.personalDetails.uploadBackSideOfCNIC = backCNICImage;
+
+  Object.assign(user.personalDetails, personalDetails);
+
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'Personal details updated successfully'
+  );
+});
+
+export {
+  register,
+  login,
+  logout,
+  verifyEmail,
+  resendOTP,
+  addAccountType,
+  addPersonalDetails
+};
