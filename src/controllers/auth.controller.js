@@ -193,11 +193,33 @@ const addPersonalDetails = asyncHandler(async (req, res) => {
 const addFinancialDetails = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const financialDetails = req.body;
+  const documents = req.files;
 
   const user = await userDB.findById(userId);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
 
-  user.financialDetails = financialDetails;
+  const accountType = user.accountType;
+
+  const updatedFinancialDetails = {
+    ...financialDetails
+  };
+
+  if (accountType === 'Normal') {
+    const proofOfIncome = documents?.proofOfIncome?.[0]?.filename;
+    const proofOfEmployment = documents?.proofOfEmployment?.[0]?.filename;
+    const companyLetterHead = documents?.companyLetterHead?.[0]?.filename;
+
+    checkField(
+      !proofOfIncome || !proofOfEmployment || !companyLetterHead,
+      'All three documents (Proof of Income, Proof of Employment, Company Letter Head) must be uploaded for Normal account'
+    );
+
+    updatedFinancialDetails.proofOfIncome = proofOfIncome;
+    updatedFinancialDetails.proofOfEmployment = proofOfEmployment;
+    updatedFinancialDetails.companyLetterhead = companyLetterHead;
+  }
+
+  user.financialDetails = updatedFinancialDetails;
 
   await user.save();
 

@@ -59,6 +59,11 @@ router.post(
 router.post(
   '/financial-details',
   verifyJWT([ROLES.USER]),
+  multipleUpload('documents').fields([
+    { name: 'proofOfIncome', maxCount: 1 },
+    { name: 'proofOfEmployment', maxCount: 1 },
+    { name: 'companyLetterHead', maxCount: 1 }
+  ]),
   addValidation(financialDetailsSchema, (req) => {
     return { accountType: req.user.accountType };
   }),
