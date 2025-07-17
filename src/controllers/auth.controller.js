@@ -146,11 +146,6 @@ const addAccountType = asyncHandler(async (req, res) => {
   const user = await userDB.findById(userId);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
 
-  checkField(
-    user.accountType,
-    `Account type is already set to '${user.accountType}'. You cannot change it again.`
-  );
-
   user.accountType = accountType;
   await user.save();
 
