@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { addValidation } from '../utils/index.js';
 import {
   accountTypeSchema,
+  beneficiariesSchema,
   financialDetailsSchema,
   loginSchema,
   personalDetailsSchema,
@@ -11,6 +12,7 @@ import {
 } from '../schemas/auth.validator.js';
 import {
   addAccountType,
+  addBeneficiaryDetails,
   addFinancialDetails,
   addPersonalDetails,
   login,
@@ -68,6 +70,19 @@ router.post(
     return { accountType: req.user.accountType };
   }),
   addFinancialDetails
+);
+
+router.post(
+  '/beneficiaries',
+  verifyJWT([ROLES.USER]),
+  multipleUpload('documents').fields([
+    { name: 'uploadFrontSideOfCNIC', maxCount: 1 },
+    { name: 'uploadBackSideOfCNIC', maxCount: 1 }
+  ]),
+  addValidation(beneficiariesSchema, (req) => ({
+    accountType: req.user.accountType
+  })),
+  addBeneficiaryDetails
 );
 
 router.post('/login', addValidation(loginSchema), login);

@@ -224,6 +224,74 @@ const financialDetailsSchema = Joi.object({
   existingInvestmentAccount: Joi.boolean().required()
 });
 
+const beneficiariesSchema = Joi.object({
+  name: Joi.string(),
+  CNICNumber: Joi.string(),
+  address: Joi.string(),
+  contactNumber: Joi.string(),
+
+  isForeigner: Joi.boolean(),
+
+  passportDetails: Joi.when('isForeigner', {
+    is: true,
+    then: Joi.object({
+      passportNumber: Joi.string(),
+      placeOfIssue: Joi.string(),
+      dateOfIssue: Joi.date(),
+      dateOfExpiry: Joi.date(),
+      uploadMainPassportPage: Joi.string()
+    }),
+    otherwise: Joi.forbidden()
+  }),
+
+  fatcaCompliance: Joi.when('$accountType', {
+    is: 'Normal',
+    then: Joi.object({
+      hasUSCitizenshipOrGreenCard: Joi.boolean(),
+      bornInUSA: Joi.boolean(),
+      hasUSAddress: Joi.boolean(),
+      USAddress: Joi.string().allow('').when('hasUSAddress', {
+        is: true,
+        then: Joi.string()
+      }),
+      hasUSTelephone: Joi.boolean(),
+      USTelephone: Joi.string().allow('').when('hasUSTelephone', {
+        is: true,
+        then: Joi.string()
+      }),
+      POAWithUSTransferAgent: Joi.boolean()
+    }),
+    otherwise: Joi.forbidden()
+  }),
+
+  standardDueDiligence: Joi.when('$accountType', {
+    is: 'Normal',
+    then: Joi.object({
+      isPEP: Joi.boolean(),
+      pepDetails: Joi.string().allow('').when('isPEP', {
+        is: true,
+        then: Joi.string()
+      }),
+      hasRefusedAccount: Joi.boolean(),
+      refusalDetails: Joi.string().allow('').when('hasRefusedAccount', {
+        is: true,
+        then: Joi.string()
+      }),
+      hasOffshoreLinks: Joi.boolean(),
+      offshoreLinksDetails: Joi.string().allow('').when('hasOffshoreLinks', {
+        is: true,
+        then: Joi.string()
+      }),
+      ownsHighValueItems: Joi.boolean(),
+      highValueDetails: Joi.string().allow('').when('ownsHighValueItems', {
+        is: true,
+        then: Joi.string()
+      })
+    }),
+    otherwise: Joi.forbidden()
+  })
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -231,5 +299,6 @@ export {
   resendOTPSchema,
   accountTypeSchema,
   personalDetailsSchema,
-  financialDetailsSchema
+  financialDetailsSchema,
+  beneficiariesSchema
 };

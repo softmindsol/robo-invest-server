@@ -225,6 +225,23 @@ const addFinancialDetails = asyncHandler(async (req, res) => {
   );
 });
 
+const addBeneficiaryDetails = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const beneficiaryDetails = req.body;
+
+  const user = await userDB.findById(userId);
+  checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+  user.beneficiaryDetails = beneficiaryDetails;
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'Beneficiary details updated successfully'
+  );
+});
+
 export {
   register,
   login,
@@ -233,5 +250,6 @@ export {
   resendOTP,
   addAccountType,
   addPersonalDetails,
-  addFinancialDetails
+  addFinancialDetails,
+  addBeneficiaryDetails
 };

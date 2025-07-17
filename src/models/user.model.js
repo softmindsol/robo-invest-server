@@ -100,6 +100,44 @@ const UserSchema = new Schema({
     NTN: { type: String },
     deductZakat: { type: Boolean, default: false },
     existingInvestmentAccount: { type: Boolean, default: false }
+  },
+  beneficiaryDetails: {
+    name: { type: String },
+    CNICNumber: { type: String },
+    address: { type: String },
+    contactNumber: { type: String },
+    uploadFrontSideOfCNIC: { type: String },
+    uploadBackSideOfCNIC: { type: String },
+    fatcaCompliance: {
+      //Normal account type
+      hasUSCitizenshipOrGreenCard: { type: Boolean },
+      bornInUSA: { type: Boolean },
+      hasUSAddress: { type: Boolean },
+      USAddress: { type: String },
+      hasUSTelephone: { type: Boolean },
+      USTelephone: { type: String },
+      POAWithUSTransferAgent: { type: Boolean }
+    },
+    standardDueDiligence: {
+      //Normal account type
+      isPEP: { type: Boolean },
+      pepDetails: { type: String },
+      hasRefusedAccount: { type: Boolean },
+      refusalDetails: { type: String },
+      hasOffshoreLinks: { type: Boolean },
+      offshoreLinksDetails: { type: String },
+      ownsHighValueItems: { type: Boolean },
+      highValueDetails: { type: String }
+    },
+    isForeigner: { type: Boolean }, // Sahulat account type
+    passportDetails: {
+      // Sahulat account type
+      passportNumber: { type: String },
+      placeOfIssue: { type: String },
+      dateOfIssue: { type: Date },
+      dateOfExpiry: { type: Date },
+      uploadMainPassportPage: { type: String }
+    }
   }
 });
 
