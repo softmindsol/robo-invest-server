@@ -108,6 +108,7 @@ const personalDetailsSchema = Joi.object({
 
   expireDate: Joi.date().greater(Joi.ref('issueDate')).required().messages({
     'any.required': 'Expire Date is required',
+    'date.base': 'Expire Date must be a valid date',
     'date.greater': 'Expire Date must be after Issue Date'
   }),
 
@@ -226,7 +227,14 @@ const financialDetailsSchema = Joi.object({
 
 const beneficiariesSchema = Joi.object({
   name: Joi.string(),
-  CNICNumber: Joi.string(),
+  CNICNumber: Joi.string()
+    .length(13)
+    .pattern(/^[0-9]+$/)
+    .messages({
+      'string.base': 'CNIC Number must be a valid string of 13 digits',
+      'string.empty': 'CNIC Number is required',
+      'string.length': 'CNIC Number must be 13 digits long'
+    }),
   address: Joi.string(),
   contactNumber: Joi.string(),
 
@@ -235,11 +243,27 @@ const beneficiariesSchema = Joi.object({
   passportDetails: Joi.when('isForeigner', {
     is: true,
     then: Joi.object({
-      passportNumber: Joi.string(),
+      passportNumber: Joi.string()
+        .trim()
+        .pattern(/^[A-Za-z0-9]{5,20}$/)
+        .allow('')
+        .messages({
+          'string.base': 'Passport Number must be a valid string',
+          'string.pattern.base':
+            'Passport Number must be 5–20 characters, letters or numbers only'
+        }),
       placeOfIssue: Joi.string(),
-      dateOfIssue: Joi.date(),
-      dateOfExpiry: Joi.date(),
-      uploadMainPassportPage: Joi.string()
+      dateOfIssue: Joi.date().optional().messages({
+        'date.base': 'Date of Issue must be a valid date'
+      }),
+
+      dateOfExpiry: Joi.date()
+        .greater(Joi.ref('dateOfIssue'))
+        .optional()
+        .messages({
+          'date.base': 'Date of Expiry must be a valid date',
+          'date.greater': 'Date of Expiry must be after Date of Issue'
+        })
     }),
     otherwise: Joi.forbidden()
   }),
@@ -255,9 +279,24 @@ const beneficiariesSchema = Joi.object({
         then: Joi.string()
       }),
       hasUSTelephone: Joi.boolean(),
-      USTelephone: Joi.string().allow('').when('hasUSTelephone', {
+      USTelephone: Joi.alternatives().conditional('hasUSTelephone', {
         is: true,
         then: Joi.string()
+          .allow('')
+          .custom((value, helpers) => {
+            if (!value) return value;
+
+            if (!isValidPhoneNumber(value)) {
+              return helpers.message(
+                'Phone Number must be a valid global number'
+              );
+            }
+            return value;
+          })
+          .messages({
+            'string.base': 'Phone Number must be a valid string'
+          }),
+        otherwise: Joi.string().allow('').optional()
       }),
       POAWithUSTransferAgent: Joi.boolean()
     }),
