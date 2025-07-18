@@ -4,6 +4,7 @@ import ApiError from './ApiError.js';
 import ApiResponse from './ApiResponse.js';
 import { handleError, sendResponse } from './send.js';
 import checkField from './checkField.js';
+import { sendEmail } from './sendEmail.js';
 
 export {
   addValidation,
@@ -12,5 +13,6 @@ export {
   ApiResponse,
   handleError,
   sendResponse,
-  checkField
+  checkField,
+  sendEmail
 };

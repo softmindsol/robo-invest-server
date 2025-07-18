@@ -2,6 +2,7 @@ import {
   asyncHandler,
   checkField,
   handleError,
+  sendEmail,
   sendResponse
 } from '../utils/index.js';
 import { userDB } from '../instances/db.instance.js';
@@ -12,6 +13,7 @@ import {
   STATUS_CODES
 } from '../constants/index.js';
 import { createOTPWithExpiry } from '../helper/generateOtp.js';
+import { generateOtpEmail } from '../helper/emailTemplates.js';
 
 const register = asyncHandler(async (req, res) => {
   const { email, username } = req.body;
@@ -24,6 +26,12 @@ const register = asyncHandler(async (req, res) => {
   const user = await userDB.create(req.body);
   const { otp, expiry } = createOTPWithExpiry();
 
+  await sendEmail({
+    to: user.email,
+    subject: 'Your Email Verification OTP - Tijori Robo Investing',
+    htmlContent: generateOtpEmail(otp)
+  });
+
   user.emailVerification.otp = otp;
   user.emailVerification.expiry = expiry;
 
@@ -32,8 +40,7 @@ const register = asyncHandler(async (req, res) => {
   sendResponse(
     res,
     STATUS_CODES.CREATED,
-    `Email Send Successfully on ${user.email}`,
-    { otp }
+    `Email Send Successfully on ${user.email}`
   );
 });
 
