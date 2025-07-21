@@ -15,6 +15,10 @@ export const login = asyncHandler(async (req, res, next) => {
   checkField(!user, 'Invalid email or password');
 
   checkField(!user.emailVerification?.isVerified, 'Email not verified');
+  checkField(
+    !user.isAccountActive,
+    'Account is on hold by admin.You will receive a confirmation email once your application is approved.'
+  );
 
   if (user.isAccountLocked()) {
     handleError(
@@ -51,5 +55,7 @@ export const logout = asyncHandler(async (req, res) => {
 
   checkField(!user, 'User not found or session expired');
 
-  sendResponse(res, STATUS_CODES.SUCCESS, 'User Logged out Successfully');
+  sendResponse(res, STATUS_CODES.SUCCESS, 'User Logged out Successfully', {
+    isAccountActive: user.isAccountActive
+  });
 });

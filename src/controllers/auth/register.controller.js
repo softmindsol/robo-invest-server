@@ -1,13 +1,13 @@
 import {
   asyncHandler,
   checkField,
-  sendEmail,
+  //   sendEmail,
   sendResponse
 } from '../../utils/index.js';
 import { userDB } from '../../instances/db.instance.js';
 import { STATUS_CODES, MESSAGES } from '../../constants/index.js';
 import { createOTPWithExpiry } from '../../helper/generateOtp.js';
-import { generateOtpEmail } from '../../helper/emailTemplates.js';
+// import { generateOtpEmail } from '../../helper/emailTemplates.js';
 import { UserService } from '../../services/auth/user.service.js';
 
 export const register = asyncHandler(async (req, res) => {
@@ -20,11 +20,15 @@ export const register = asyncHandler(async (req, res) => {
   const user = await userDB.create(req.body);
   const { otp, expiry } = createOTPWithExpiry();
 
-  await sendEmail({
-    to: user.email,
-    subject: 'Your Email Verification OTP - Tijori Robo Investing',
-    htmlContent: generateOtpEmail(otp)
-  });
+  //   await sendEmail({
+  //     to: user.email,
+  //     subject: 'Your Email Verification OTP - Tijori Robo Investing',
+  //     htmlContent: generateOtpEmail(otp)
+  //   });
+
+  if (!user.emailVerification) {
+    user.emailVerification = {};
+  }
 
   user.emailVerification.otp = otp;
   user.emailVerification.expiry = expiry;
@@ -37,7 +41,7 @@ export const register = asyncHandler(async (req, res) => {
     res,
     STATUS_CODES.CREATED,
     `Email Send Successfully on ${user.email}`,
-    { accessToken }
+    { accessToken, otp }
   );
 });
 
@@ -83,5 +87,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  sendResponse(res, STATUS_CODES.SUCCESS, `New OTP sent to ${user.email}`);
+  sendResponse(res, STATUS_CODES.SUCCESS, `New OTP sent to ${user.email}`, {
+    otp
+  });
 });
