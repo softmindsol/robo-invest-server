@@ -28,12 +28,15 @@ export const register = asyncHandler(async (req, res) => {
   user.emailVerification.otp = otp;
   user.emailVerification.expiry = expiry;
 
+  const accessToken = await UserService.generateAndSaveToken(user);
+
   await user.save();
 
   sendResponse(
     res,
     STATUS_CODES.CREATED,
-    `Email Send Successfully on ${user.email}`
+    `Email Send Successfully on ${user.email}`,
+    { accessToken }
   );
 });
 
