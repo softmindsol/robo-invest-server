@@ -45,9 +45,11 @@ export const userMethods = {
   isPasswordReused: async function (newPassword) {
     // Check if new password matches any of the last 3 passwords
     for (const historyEntry of this.passwordHistory) {
-      const isMatch = await bcrypt.compare(newPassword, historyEntry.password);
-      if (isMatch) {
-        return true;
+      if (historyEntry.password) {
+        const isMatch = await bcrypt.compare(newPassword, historyEntry.password);
+        if (isMatch) {
+          return true;
+        }
       }
     }
     return false;
@@ -57,11 +59,14 @@ export const userMethods = {
 export const userPreSave = async function (next) {
   if (!this.isModified('password')) return next();
   
-  // Store the old password in history before hashing the new one
-  if (!this.isNew && this.password) {
-    await this.addToPasswordHistory(this.password);
+  // Store the current hashed password in history before hashing the new one
+  if (!this.isNew) {
+    // Get the current hashed password from database before it gets overwritten
+    const currentUser = await this.constructor.findById(this._id).select('+password');
+    if (currentUser && currentUser.password) {
+      await this.addToPasswordHistory(currentUser.password);
+    }
   }
   
   this.password = await bcrypt.hash(this.password, 10);
   next();
-};
