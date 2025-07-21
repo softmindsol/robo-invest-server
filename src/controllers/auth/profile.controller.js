@@ -34,10 +34,18 @@ export const addPersonalDetails = asyncHandler(async (req, res) => {
     'Both front and back CNIC images must be uploaded'
   );
 
-  user.personalDetails.uploadFrontSideOfCNIC = frontCNICImage;
-  user.personalDetails.uploadBackSideOfCNIC = backCNICImage;
+  // Initialize personalDetails if it doesn't exist
+  if (!user.personalDetails) {
+    user.personalDetails = {};
+  }
 
-  user.personalDetails = personalDetails;
+  // Merge the form data with file paths
+  user.personalDetails = {
+    ...personalDetails,
+    uploadFrontSideOfCNIC: frontCNICImage,
+    uploadBackSideOfCNIC: backCNICImage
+  };
+
   await user.save();
 
   sendResponse(
@@ -56,9 +64,12 @@ export const addFinancialDetails = asyncHandler(async (req, res) => {
 
   const accountType = user.accountType;
 
-  const updatedFinancialDetails = {
-    ...financialDetails
-  };
+  // Initialize financialDetails if it doesn't exist
+  if (!user.financialDetails) {
+    user.financialDetails = {};
+  }
+
+  const updatedFinancialDetails = { ...financialDetails };
 
   if (accountType === 'Normal') {
     const proofOfIncome = documents?.proofOfIncome?.[0]?.filename;
@@ -90,7 +101,15 @@ export const addBeneficiaryDetails = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const beneficiaryDetails = req.body;
 
-  await UserService.updateUserDetails(userId, { beneficiaryDetails });
+  const user = await UserService.findUserById(userId);
+
+  // Initialize beneficiaryDetails if it doesn't exist
+  if (!user.beneficiaryDetails) {
+    user.beneficiaryDetails = {};
+  }
+
+  user.beneficiaryDetails = beneficiaryDetails;
+  await user.save();
 
   sendResponse(
     res,
