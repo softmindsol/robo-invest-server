@@ -14,6 +14,8 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await UserService.findUserByEmail(email, true);
   checkField(!user, 'Invalid email or password');
 
+  checkField(!user.emailVerification?.isVerified, 'Email not verified');
+
   if (user.isAccountLocked()) {
     handleError(
       next,
@@ -23,8 +25,11 @@ export const login = asyncHandler(async (req, res, next) => {
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
-  const loginSuccess = await UserService.handleLoginAttempt(user, isPasswordCorrect);
-  
+  const loginSuccess = await UserService.handleLoginAttempt(
+    user,
+    isPasswordCorrect
+  );
+
   if (!loginSuccess) {
     checkField(!isPasswordCorrect, 'Invalid email or password');
   }

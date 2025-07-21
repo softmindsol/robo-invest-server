@@ -1,7 +1,6 @@
 import {
   asyncHandler,
   checkField,
-  handleError,
   sendEmail,
   sendResponse
 } from '../../utils/index.js';
@@ -13,7 +12,7 @@ import { UserService } from '../../services/auth/user.service.js';
 
 export const register = asyncHandler(async (req, res) => {
   const { email, username } = req.body;
-  
+
   await UserService.checkEmailExists(email);
   await UserService.checkUsernameExists(username);
 
@@ -38,14 +37,12 @@ export const register = asyncHandler(async (req, res) => {
   );
 });
 
-export const verifyEmail = asyncHandler(async (req, res, next) => {
+export const verifyEmail = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
   const user = await UserService.findUserByEmail(email);
 
-  if (!user) {
-    handleError(next, STATUS_CODES.NOT_FOUND, MESSAGES.NOT_FOUND);
-  }
+  checkField(!user, MESSAGES.NOT_FOUND, STATUS_CODES.NOT_FOUND);
 
   checkField(user.emailVerification.isVerified, 'Email already verified');
   checkField(
@@ -66,15 +63,12 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
   sendResponse(res, STATUS_CODES.SUCCESS, 'Email verified successfully');
 });
 
-export const resendOTP = asyncHandler(async (req, res, next) => {
+export const resendOTP = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   const user = await UserService.findUserByEmail(email);
 
-  if (!user) {
-    handleError(next, STATUS_CODES.NOT_FOUND, MESSAGES.NOT_FOUND);
-  }
-
+  checkField(!user, MESSAGES.NOT_FOUND, STATUS_CODES.NOT_FOUND);
   checkField(user.emailVerification.isVerified, 'Email already verified');
 
   const { otp, expiry } = createOTPWithExpiry();
@@ -85,5 +79,5 @@ export const resendOTP = asyncHandler(async (req, res, next) => {
 
   await user.save();
 
-  sendResponse(res, STATUS_CODES.SUCCESS, `New OTP sent to ${user.email}`, otp);
+  sendResponse(res, STATUS_CODES.SUCCESS, `New OTP sent to ${user.email}`);
 });
