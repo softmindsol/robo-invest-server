@@ -331,6 +331,64 @@ const beneficiariesSchema = Joi.object({
   })
 });
 
+const investmentGoalsSchema = Joi.object({
+  objective: Joi.string()
+    .valid('Retirement', 'Higher Education', 'Buy property', 'Long term wealth')
+    .required(),
+
+  timeHorizon: Joi.string()
+    .valid(
+      '1 to 2 years',
+      '3 to 5 years',
+      '6 to 10 years',
+      '11 to 20 years',
+      'Over 20 years'
+    )
+    .required(),
+
+  monthlyIncome: Joi.string()
+    .valid(
+      '25,000 to 50,000',
+      '50,000 to 100,000',
+      '100,000 to 200,000',
+      '200,000 to 500,000',
+      '500,000 to 1 million',
+      'Rs. 1 million +'
+    )
+    .required(),
+
+  educationLevel: Joi.string()
+    .valid(
+      'Matric',
+      'Intermediate',
+      'A Levels',
+      'Bachelors',
+      'Masters or Higher'
+    )
+    .required(),
+
+  investmentExperience: Joi.string()
+    .valid('Beginner', 'Intermediate', 'Advance')
+    .required(),
+
+  totalNetWorth: Joi.string()
+    .valid(
+      'Under Rs. 1 million',
+      'Between Rs. 1 and 3 million',
+      'Between Rs. 5 and 10 million',
+      'More than Rs. 10 million'
+    )
+    .required(),
+
+  dependentsOnIncome: Joi.string()
+    .valid('0', '1', '2 or more', '4 or more')
+    .required(),
+
+  marketVolatilityReaction: Joi.string()
+    .valid('Buy more', 'Sell everything', 'Hold investments, do nothing')
+    .required()
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -339,5 +397,6 @@ export {
   accountTypeSchema,
   personalDetailsSchema,
   financialDetailsSchema,
-  beneficiariesSchema
+  beneficiariesSchema,
+  investmentGoalsSchema
 };

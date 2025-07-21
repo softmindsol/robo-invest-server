@@ -3,7 +3,8 @@ import {
   emailVerificationSchema,
   personalDetailsSchema,
   financialDetailsSchema,
-  beneficiaryDetailsSchema
+  beneficiaryDetailsSchema,
+  investmentGoalsSchema
 } from './schemas/user.schema.js';
 import { userMethods, userPreSave } from './methods/user.methods.js';
 
@@ -41,7 +42,8 @@ const UserSchema = new Schema({
   },
   personalDetails: personalDetailsSchema,
   financialDetails: financialDetailsSchema,
-  beneficiaryDetails: beneficiaryDetailsSchema
+  beneficiaryDetails: beneficiaryDetailsSchema,
+  investmentGoals: investmentGoalsSchema
 });
 
 UserSchema.pre('save', userPreSave);

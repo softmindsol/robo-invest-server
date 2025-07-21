@@ -4,6 +4,7 @@ import {
   accountTypeSchema,
   beneficiariesSchema,
   financialDetailsSchema,
+  investmentGoalsSchema,
   loginSchema,
   personalDetailsSchema,
   registerSchema,
@@ -14,6 +15,7 @@ import {
   addAccountType,
   addBeneficiaryDetails,
   addFinancialDetails,
+  addInvestmentGoals,
   addPersonalDetails,
   login,
   logout,
@@ -87,6 +89,13 @@ router.post(
     accountType: req.user.accountType
   })),
   addBeneficiaryDetails
+);
+
+router.post(
+  '/investment-goals',
+  verifyJWT([ROLES.USER]),
+  addValidation(investmentGoalsSchema),
+  addInvestmentGoals
 );
 
 router.post('/login', addValidation(loginSchema), login);

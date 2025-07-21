@@ -133,3 +133,78 @@ export const beneficiaryDetailsSchema = new Schema(
   },
   { _id: false }
 );
+
+export const investmentGoalsSchema = new Schema(
+  {
+    objective: {
+      type: String,
+      enum: [
+        'Retirement',
+        'Higher Education',
+        'Buy property',
+        'Long term wealth'
+      ],
+      default: 'Retirement'
+    },
+    timeHorizon: {
+      type: String,
+      enum: [
+        '1 to 2 years',
+        '3 to 5 years',
+        '6 to 10 years',
+        '11 to 20 years',
+        'Over 20 years'
+      ],
+      default: '1 to 2 years'
+    },
+    monthlyIncome: {
+      type: String,
+      enum: [
+        '25,000 to 50,000',
+        '50,000 to 100,000',
+        '100,000 to 200,000',
+        '200,000 to 500,000',
+        '500,000 to 1 million',
+        'Rs. 1 million +'
+      ],
+      default: '25,000 to 50,000'
+    },
+    educationLevel: {
+      type: String,
+      enum: [
+        'Matric',
+        'Intermediate',
+        'A Levels',
+        'Bachelors',
+        'Masters or Higher'
+      ],
+      default: 'Matric'
+    },
+    investmentExperience: {
+      type: String,
+      enum: ['Beginner', 'Intermediate', 'Advance'],
+      default: 'Beginner'
+    },
+    totalNetWorth: {
+      type: String,
+      enum: [
+        'Under Rs. 1 million',
+        'Between Rs. 1 and 3 million',
+        'Between Rs. 5 and 10 million',
+        'More than Rs. 10 million'
+      ],
+      default: 'Under Rs. 1 million'
+    },
+    dependentsOnIncome: {
+      type: String,
+      enum: ['0', '1', '2 or more', '4 or more'],
+      default: '0'
+    },
+    marketVolatilityReaction: {
+      type: String,
+      enum: ['Buy more', 'Sell everything', 'Hold investments, do nothing'],
+      default: 'Buy more'
+    }
+  },
+  { _id: false }
+);

@@ -125,3 +125,30 @@ export const addBeneficiaryDetails = asyncHandler(async (req, res) => {
     'Beneficiary details updated successfully'
   );
 });
+
+export const addInvestmentGoals = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const investmentGoals = req.body;
+
+  const user = await UserService.findUserById(userId);
+  checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+  // Initialize investmentGoals if not present
+  if (!user.investmentGoals) {
+    user.investmentGoals = {};
+  }
+
+  // Update investment goals
+  user.investmentGoals = {
+    ...user.investmentGoals,
+    ...investmentGoals
+  };
+
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'Investment goals updated successfully'
+  );
+});
