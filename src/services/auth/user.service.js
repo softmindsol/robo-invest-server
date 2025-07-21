@@ -1,6 +1,10 @@
 import { userDB } from '../../instances/db.instance.js';
 import { checkField } from '../../utils/index.js';
-import { STATUS_CODES, MAX_LOGIN_ATTEMPTS, LOCK_TIME } from '../../constants/index.js';
+import {
+  STATUS_CODES,
+  MAX_LOGIN_ATTEMPTS,
+  LOCK_TIME
+} from '../../constants/index.js';
 
 export class UserService {
   static async checkEmailExists(email) {
@@ -11,6 +15,10 @@ export class UserService {
   static async checkUsernameExists(username) {
     const existingUsername = await userDB.findOne({ username });
     checkField(existingUsername, 'Username already exists');
+  }
+  static async checkPhoneNumberExists(phoneNumber) {
+    const existingPhone = await userDB.findOne({ phoneNumber });
+    checkField(existingPhone, 'Phone number already exists');
   }
 
   static async findUserByEmail(email, selectPassword = false) {
@@ -34,11 +42,11 @@ export class UserService {
   static async handleLoginAttempt(user, isPasswordCorrect) {
     if (!isPasswordCorrect) {
       user.loginAttempts += 1;
-      
+
       if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
         user.lockUntil = new Date(Date.now() + LOCK_TIME);
       }
-      
+
       await user.save();
       return false;
     }

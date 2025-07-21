@@ -11,10 +11,11 @@ import { generateOtpEmail } from '../../helper/emailTemplates.js';
 import { UserService } from '../../services/auth/user.service.js';
 
 export const register = asyncHandler(async (req, res) => {
-  const { email, username } = req.body;
+  const { email, username, phoneNumber } = req.body;
 
   await UserService.checkEmailExists(email);
   await UserService.checkUsernameExists(username);
+  await UserService.checkPhoneNumberExists(phoneNumber);
 
   const user = await userDB.create(req.body);
   const { otp, expiry } = createOTPWithExpiry();

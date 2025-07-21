@@ -7,6 +7,19 @@ const registerSchema = Joi.object({
     'string.email': 'Email must be a valid email address'
   }),
 
+  phoneNumber: Joi.string()
+    .custom((value, helpers) => {
+      if (!isValidPhoneNumber(value)) {
+        return helpers.message('Phone Number must be a valid global number');
+      }
+      return value;
+    })
+    .required()
+    .messages({
+      'string.base': 'Phone Number must be a valid string',
+      'any.required': 'Phone Number is required'
+    }),
+
   username: Joi.string()
     .trim()
     .min(3)
@@ -160,19 +173,6 @@ const personalDetailsSchema = Joi.object({
     'string.empty': 'Mother’s Name cannot be empty',
     'any.required': 'Mother’s Name is required'
   }),
-
-  phoneNumber: Joi.string()
-    .custom((value, helpers) => {
-      if (!isValidPhoneNumber(value)) {
-        return helpers.message('Phone Number must be a valid global number');
-      }
-      return value;
-    })
-    .required()
-    .messages({
-      'string.base': 'Phone Number must be a valid string',
-      'any.required': 'Phone Number is required'
-    }),
 
   placeOfBirth: Joi.string().min(2).max(100).required().messages({
     'string.base': 'Place of Birth must be a valid string',

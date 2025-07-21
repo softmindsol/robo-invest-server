@@ -40,7 +40,6 @@ export const personalDetailsSchema = new Schema(
       name: { type: String }
     },
     mothersName: { type: String },
-    phoneNumber: { type: String },
     placeOfBirth: { type: String },
     nationality: { type: String },
     uploadFrontSideOfCNIC: { type: String },
