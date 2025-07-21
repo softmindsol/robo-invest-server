@@ -389,6 +389,35 @@ const investmentGoalsSchema = Joi.object({
     .required()
 });
 
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string().trim().email().required().messages({
+    'string.empty': 'Email is required',
+    'string.email': 'Email must be a valid email address'
+  })
+});
+
+const resetPasswordSchema = Joi.object({
+  email: Joi.string().trim().email().required().messages({
+    'string.empty': 'Email is required',
+    'string.email': 'Email must be a valid email address'
+  }),
+  newPassword: Joi.string()
+    .trim()
+    .min(10)
+    .max(128)
+    .pattern(
+      new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])')
+    )
+    .required()
+    .messages({
+      'string.empty': 'Password is required',
+      'string.min': 'Password must be at least 10 characters long',
+      'string.max': 'Password must not exceed 128 characters',
+      'string.pattern.base':
+        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character'
+    })
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -398,5 +427,7 @@ export {
   personalDetailsSchema,
   financialDetailsSchema,
   beneficiariesSchema,
-  investmentGoalsSchema
+  investmentGoalsSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
 };

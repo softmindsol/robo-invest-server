@@ -5,6 +5,11 @@ import {
 } from './auth/register.controller.js';
 import { login, logout } from './auth/login.controller.js';
 import {
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword
+} from './auth/reset-password.controller.js';
+import {
   addAccountType,
   addPersonalDetails,
   addFinancialDetails,
@@ -22,5 +27,8 @@ export {
   addPersonalDetails,
   addFinancialDetails,
   addBeneficiaryDetails,
-  addInvestmentGoals
+  addInvestmentGoals,
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword
 };

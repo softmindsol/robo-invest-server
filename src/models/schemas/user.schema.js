@@ -21,6 +21,16 @@ export const emailVerificationSchema = new Schema(
   { _id: false }
 );
 
+export const resetPasswordSchema = new Schema(
+  {
+    otp: String,
+    expiry: Date,
+    verified: { type: Boolean, default: false },
+    updatedAt: { type: Date }
+  },
+  { _id: false }
+);
+
 export const personalDetailsSchema = new Schema(
   {
     firstName: { type: String },

@@ -4,11 +4,13 @@ import {
   accountTypeSchema,
   beneficiariesSchema,
   financialDetailsSchema,
+  forgotPasswordSchema,
   investmentGoalsSchema,
   loginSchema,
   personalDetailsSchema,
   registerSchema,
   resendOTPSchema,
+  resetPasswordSchema,
   verifyEmailSchema
 } from '../schemas/auth.validator.js';
 import {
@@ -17,11 +19,14 @@ import {
   addFinancialDetails,
   addInvestmentGoals,
   addPersonalDetails,
+  forgotPassword,
   login,
   logout,
   register,
   resendOTP,
-  verifyEmail
+  resetPassword,
+  verifyEmail,
+  verifyResetOTP
 } from '../controllers/auth.controller.js';
 import {
   multipleUpload,
@@ -100,5 +105,21 @@ router.post(
 
 router.post('/login', addValidation(loginSchema), login);
 router.post('/logout', verifyJWT([ROLES.USER]), logout);
+
+router.post(
+  '/forgot-password',
+  addValidation(forgotPasswordSchema),
+  forgotPassword
+);
+router.post(
+  '/verify-reset-otp',
+  addValidation(verifyEmailSchema),
+  verifyResetOTP
+);
+router.post(
+  '/reset-password',
+  addValidation(resetPasswordSchema),
+  resetPassword
+);
 
 export default router;

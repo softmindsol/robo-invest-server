@@ -4,7 +4,8 @@ import {
   personalDetailsSchema,
   financialDetailsSchema,
   beneficiaryDetailsSchema,
-  investmentGoalsSchema
+  investmentGoalsSchema,
+  resetPasswordSchema
 } from './schemas/user.schema.js';
 import { userMethods, userPreSave } from './methods/user.methods.js';
 
@@ -28,6 +29,7 @@ const UserSchema = new Schema({
     enum: ['Normal', 'Sahulat']
   },
   emailVerification: emailVerificationSchema,
+  resetPassword: resetPasswordSchema,
   loginAttempts: {
     type: Number,
     required: true,
