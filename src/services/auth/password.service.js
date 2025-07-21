@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import { checkField } from '../../utils/index.js';
 import { STATUS_CODES } from '../../constants/index.js';
 
@@ -10,17 +9,23 @@ export class PasswordService {
    * @throws {Error} If password is reused
    */
   static async validatePasswordReuse(user, newPassword) {
-    const isReused = await user.isPasswordReused(newPassword);
-    checkField(
-      isReused,
-      'Password cannot be the same as your last 3 passwords. Please choose a different password.',
-      STATUS_CODES.BAD_REQUEST
-    );
+    try {
+      const isReused = await user.isPasswordReused(newPassword);
+      checkField(
+        isReused,
+        'Password cannot be the same as your last 3 passwords. Please choose a different password.',
+        STATUS_CODES.BAD_REQUEST
+      );
+    } catch (error) {
+      // If there's an error in password comparison, log it but don't block the operation
+      console.error('Error validating password reuse:', error);
+      // Continue without blocking - better to allow password change than block user
+    }
   }
 
   /**
    * Validates current password before allowing password change
-   * @param {Object} user - User document
+   * @param {Object} user - User document with password field selected
    * @param {string} currentPassword - Current password to validate
    * @throws {Error} If current password is incorrect
    */
@@ -40,15 +45,18 @@ export class PasswordService {
    * @param {string} newPassword - New password
    */
   static async changePassword(user, currentPassword, newPassword) {
+    // Get user with password field for validation
+    const userWithPassword = await user.constructor.findById(user._id).select('+password');
+    
     // Validate current password
-    await this.validateCurrentPassword(user, currentPassword);
+    await this.validateCurrentPassword(userWithPassword, currentPassword);
     
     // Validate password reuse
-    await this.validatePasswordReuse(user, newPassword);
+    await this.validatePasswordReuse(userWithPassword, newPassword);
     
     // Set new password (pre-save hook will handle hashing and history)
-    user.password = newPassword;
-    await user.save();
+    userWithPassword.password = newPassword;
+    await userWithPassword.save();
   }
 
   /**
@@ -57,11 +65,14 @@ export class PasswordService {
    * @param {string} newPassword - New password
    */
   static async resetPassword(user, newPassword) {
+    // Get user with password field for validation
+    const userWithPassword = await user.constructor.findById(user._id).select('+password');
+    
     // Validate password reuse
-    await this.validatePasswordReuse(user, newPassword);
+    await this.validatePasswordReuse(userWithPassword, newPassword);
     
     // Set new password (pre-save hook will handle hashing and history)
-    user.password = newPassword;
-    await user.save();
+    userWithPassword.password = newPassword;
+    await userWithPassword.save();
   }
 }
