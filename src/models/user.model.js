@@ -5,7 +5,8 @@ import {
   financialDetailsSchema,
   beneficiaryDetailsSchema,
   investmentGoalsSchema,
-  resetPasswordSchema
+  resetPasswordSchema,
+  passwordHistorySchema
 } from './schemas/user.schema.js';
 import { userMethods, userPreSave } from './methods/user.methods.js';
 
@@ -30,6 +31,10 @@ const UserSchema = new Schema({
   },
   emailVerification: emailVerificationSchema,
   resetPassword: resetPasswordSchema,
+  passwordHistory: {
+    type: [passwordHistorySchema],
+    default: []
+  },
   loginAttempts: {
     type: Number,
     required: true,

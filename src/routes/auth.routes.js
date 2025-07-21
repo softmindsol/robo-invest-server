@@ -3,6 +3,7 @@ import { addValidation } from '../utils/index.js';
 import {
   accountTypeSchema,
   beneficiariesSchema,
+  changePasswordSchema,
   financialDetailsSchema,
   forgotPasswordSchema,
   investmentGoalsSchema,
@@ -19,6 +20,7 @@ import {
   addFinancialDetails,
   addInvestmentGoals,
   addPersonalDetails,
+  changePassword,
   forgotPassword,
   login,
   logout,
@@ -105,6 +107,13 @@ router.post(
 
 router.post('/login', addValidation(loginSchema), login);
 router.post('/logout', verifyJWT([ROLES.USER]), logout);
+
+router.post(
+  '/change-password',
+  verifyJWT([ROLES.USER]),
+  addValidation(changePasswordSchema),
+  changePassword
+);
 
 router.post(
   '/forgot-password',

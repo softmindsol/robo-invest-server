@@ -9,6 +9,7 @@ import {
   verifyResetOTP,
   resetPassword
 } from './auth/reset-password.controller.js';
+import { changePassword } from './auth/change-password.controller.js';
 import {
   addAccountType,
   addPersonalDetails,
@@ -30,5 +31,6 @@ export {
   addInvestmentGoals,
   forgotPassword,
   verifyResetOTP,
-  resetPassword
+  resetPassword,
+  changePassword
 };

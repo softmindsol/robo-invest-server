@@ -1,6 +1,7 @@
 import { STATUS_CODES } from '../../constants/index.js';
 import { createOTPWithExpiry } from '../../helper/generateOtp.js';
 import { UserService } from '../../services/auth/user.service.js';
+import { PasswordService } from '../../services/auth/password.service.js';
 import {
   asyncHandler,
   checkField,
@@ -68,9 +69,10 @@ export const resetPassword = asyncHandler(async (req, res) => {
     'OTP not verified or invalid request'
   );
 
-  user.password = newPassword;
+  // Use PasswordService to reset password with validation
+  await PasswordService.resetPassword(user, newPassword);
+  
   user.resetPassword = undefined;
-  await user.save();
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'Password reset successful');
 });

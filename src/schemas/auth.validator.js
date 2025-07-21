@@ -418,6 +418,27 @@ const resetPasswordSchema = Joi.object({
     })
 });
 
+const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().trim().required().messages({
+    'string.empty': 'Current password is required'
+  }),
+  newPassword: Joi.string()
+    .trim()
+    .min(10)
+    .max(128)
+    .pattern(
+      new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])')
+    )
+    .required()
+    .messages({
+      'string.empty': 'New password is required',
+      'string.min': 'New password must be at least 10 characters long',
+      'string.max': 'New password must not exceed 128 characters',
+      'string.pattern.base':
+        'New password must include at least one uppercase letter, one lowercase letter, one number, and one special character'
+    })
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -429,5 +450,6 @@ export {
   beneficiariesSchema,
   investmentGoalsSchema,
   forgotPasswordSchema,
-  resetPasswordSchema
+  resetPasswordSchema,
+  changePasswordSchema
 };
