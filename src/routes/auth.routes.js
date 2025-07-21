@@ -77,7 +77,11 @@ router.post(
   verifyJWT([ROLES.USER]),
   multipleUpload('documents').fields([
     { name: 'uploadFrontSideOfCNIC', maxCount: 1 },
-    { name: 'uploadBackSideOfCNIC', maxCount: 1 }
+    { name: 'uploadBackSideOfCNIC', maxCount: 1 },
+    {
+      name: 'uploadMainPassportPage',
+      maxCount: 1
+    }
   ]),
   addValidation(beneficiariesSchema, (req) => ({
     accountType: req.user.accountType

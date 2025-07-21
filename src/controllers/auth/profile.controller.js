@@ -1,9 +1,5 @@
-import {
-  asyncHandler,
-  checkField,
-  sendResponse
-} from '../../utils/index.js';
-import { STATUS_CODES } from '../../constants/index.js';
+import { asyncHandler, checkField, sendResponse } from '../../utils/index.js';
+import { ACCOUNT_TYPES, STATUS_CODES } from '../../constants/index.js';
 import { UserService } from '../../services/auth/user.service.js';
 
 export const addAccountType = asyncHandler(async (req, res) => {
@@ -71,7 +67,7 @@ export const addFinancialDetails = asyncHandler(async (req, res) => {
 
   const updatedFinancialDetails = { ...financialDetails };
 
-  if (accountType === 'Normal') {
+  if (accountType === ACCOUNT_TYPES.NORMAL) {
     const proofOfIncome = documents?.proofOfIncome?.[0]?.filename;
     const proofOfEmployment = documents?.proofOfEmployment?.[0]?.filename;
     const companyLetterHead = documents?.companyLetterHead?.[0]?.filename;
@@ -100,15 +96,27 @@ export const addFinancialDetails = asyncHandler(async (req, res) => {
 export const addBeneficiaryDetails = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const beneficiaryDetails = req.body;
+  const documents = req.files;
 
   const user = await UserService.findUserById(userId);
+
+  const accountType = user.accountType;
 
   // Initialize beneficiaryDetails if it doesn't exist
   if (!user.beneficiaryDetails) {
     user.beneficiaryDetails = {};
   }
 
-  user.beneficiaryDetails = beneficiaryDetails;
+  const updatedBeneficiaryDetails = { ...beneficiaryDetails };
+
+  if (accountType === ACCOUNT_TYPES.SAHULAT) {
+    const uploadMainPassportPage =
+      documents?.uploadMainPassportPage?.[0]?.filename;
+
+    updatedBeneficiaryDetails.uploadMainPassportPage = uploadMainPassportPage;
+  }
+
+  user.beneficiaryDetails = updatedBeneficiaryDetails;
   await user.save();
 
   sendResponse(

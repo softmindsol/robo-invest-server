@@ -40,3 +40,8 @@ export const MAX_LOGIN_ATTEMPTS = 5; // Maximum allowed login attempts
 export const LOCK_TIME = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 export const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+export const ACCOUNT_TYPES = {
+  NORMAL: 'Normal',
+  SAHULAT: 'Sahulat'
+};

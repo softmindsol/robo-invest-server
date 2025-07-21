@@ -237,7 +237,7 @@ const beneficiariesSchema = Joi.object({
     }),
   address: Joi.string(),
   contactNumber: Joi.string(),
-
+  relationship: Joi.string(),
   isForeigner: Joi.boolean(),
 
   passportDetails: Joi.when('isForeigner', {
