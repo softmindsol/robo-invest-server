@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import {
-  ACCESS_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRY
-} from '../configs/env.config.js';
+  emailVerificationSchema,
+  personalDetailsSchema,
+  financialDetailsSchema,
+  beneficiaryDetailsSchema
+} from './schemas/user.schema.js';
+import { userMethods, userPreSave } from './methods/user.methods.js';
+
 const { Schema, model } = mongoose;
 
 const UserSchema = new Schema({
@@ -24,21 +26,7 @@ const UserSchema = new Schema({
     type: String,
     enum: ['Normal', 'Sahulat']
   },
-  emailVerification: {
-    otp: {
-      type: String
-    },
-    expiry: {
-      type: Date
-    },
-    updatedAt: {
-      type: Date
-    },
-    isVerified: {
-      type: Boolean,
-      default: false
-    }
-  },
+  emailVerification: emailVerificationSchema,
   loginAttempts: {
     type: Number,
     required: true,
@@ -51,124 +39,13 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  personalDetails: {
-    firstName: { type: String },
-    lastName: { type: String },
-    CNICNumber: { type: String, unique: true },
-    issueDate: { type: Date },
-    expireDate: { type: Date },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
-    maritalStatus: {
-      type: String,
-      enum: ['Single', 'Married', 'Divorced', 'Widowed']
-    },
-    dateOfBirth: { type: Date },
-    permanentAddress: { type: String },
-    fathersOrHusbandsName: {
-      selection: { type: String, enum: ['Father', 'Husband'] },
-      name: { type: String }
-    },
-    mothersName: { type: String },
-    phoneNumber: { type: String },
-    placeOfBirth: { type: String },
-    nationality: { type: String },
-    uploadFrontSideOfCNIC: { type: String },
-    uploadBackSideOfCNIC: { type: String },
-    dualNationality: { type: Boolean },
-    isPakistaniResident: {
-      type: Boolean,
-      default: false,
-      required: function () {
-        return this.accountType === 'Sahulat';
-      }
-    }
-  },
-  financialDetails: {
-    occupation: { type: String },
-    occupationIndustry: { type: String },
-    incomeSource: { type: String },
-    employerAddress: { type: String },
-    employerCountry: { type: String },
-    yearsEmployed: { type: Number },
-    salaryAmount: { type: Number },
-    grossAnnualIncome: { type: Number }, // Only for Normal
-    numberOfDependents: { type: Number }, // Only for Normal
-    proofOfIncome: { type: String }, // Only for Normal
-    proofOfEmployment: { type: String }, // Only for Normal
-    companyLetterhead: { type: String }, // Only for Normal
-    taxFilingStatus: { type: Boolean, default: false },
-    NTN: { type: String },
-    deductZakat: { type: Boolean, default: false },
-    existingInvestmentAccount: { type: Boolean, default: false }
-  },
-  beneficiaryDetails: {
-    name: { type: String },
-    CNICNumber: { type: String },
-    address: { type: String },
-    contactNumber: { type: String },
-    uploadFrontSideOfCNIC: { type: String },
-    uploadBackSideOfCNIC: { type: String },
-    fatcaCompliance: {
-      //Normal account type
-      hasUSCitizenshipOrGreenCard: { type: Boolean },
-      bornInUSA: { type: Boolean },
-      hasUSAddress: { type: Boolean },
-      USAddress: { type: String },
-      hasUSTelephone: { type: Boolean },
-      USTelephone: { type: String },
-      POAWithUSTransferAgent: { type: Boolean }
-    },
-    standardDueDiligence: {
-      //Normal account type
-      isPEP: { type: Boolean },
-      pepDetails: { type: String },
-      hasRefusedAccount: { type: Boolean },
-      refusalDetails: { type: String },
-      hasOffshoreLinks: { type: Boolean },
-      offshoreLinksDetails: { type: String },
-      ownsHighValueItems: { type: Boolean },
-      highValueDetails: { type: String }
-    },
-    isForeigner: { type: Boolean }, // Sahulat account type
-    passportDetails: {
-      // Sahulat account type
-      passportNumber: { type: String },
-      placeOfIssue: { type: String },
-      dateOfIssue: { type: Date },
-      dateOfExpiry: { type: Date },
-      uploadMainPassportPage: { type: String }
-    }
-  }
+  personalDetails: personalDetailsSchema,
+  financialDetails: financialDetailsSchema,
+  beneficiaryDetails: beneficiaryDetailsSchema
 });
 
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-UserSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
-
-UserSchema.methods.generateAccessToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-      email: this.email,
-      role: this.role,
-      accountType: this.accountType
-    },
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: ACCESS_TOKEN_EXPIRY
-    }
-  );
-};
-
-UserSchema.methods.isAccountLocked = function () {
-  return this.lockUntil && this.lockUntil > Date.now();
-};
+UserSchema.pre('save', userPreSave);
+Object.assign(UserSchema.methods, userMethods);
 
 const User = model('User', UserSchema);
 
