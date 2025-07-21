@@ -56,12 +56,19 @@ export const userMethods = {
     // Check if new password matches any of the last 3 passwords
     for (const historyEntry of this.passwordHistory) {
       // Skip if password is null, undefined, or empty
-      if (!historyEntry || !historyEntry.password || historyEntry.password.trim() === '') {
+      if (
+        !historyEntry ||
+        !historyEntry.password ||
+        historyEntry.password.trim() === ''
+      ) {
         continue;
       }
 
       try {
-        const isMatch = await bcrypt.compare(newPassword, historyEntry.password);
+        const isMatch = await bcrypt.compare(
+          newPassword,
+          historyEntry.password
+        );
         if (isMatch) {
           return true;
         }
@@ -80,19 +87,25 @@ export const userPreSave = async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
-  
+
   try {
     // If this is not a new user, store the current password in history
     if (!this.isNew) {
       // Get the current password from the database before it gets overwritten
-      const currentUser = await this.constructor.findById(this._id).select('+password');
-      
-      if (currentUser && currentUser.password && currentUser.password.trim() !== '') {
+      const currentUser = await this.constructor
+        .findById(this._id)
+        .select('+password');
+
+      if (
+        currentUser &&
+        currentUser.password &&
+        currentUser.password.trim() !== ''
+      ) {
         // Add the current hashed password to history
         this.addToPasswordHistory(currentUser.password);
       }
     }
-    
+
     // Hash the new password
     this.password = await bcrypt.hash(this.password, 10);
     next();
