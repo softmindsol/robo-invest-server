@@ -1,6 +1,6 @@
 import { STATUS_CODES } from '../../constants/index.js';
 import { createOTPWithExpiry } from '../../helper/generateOtp.js';
-import User from '../../models/user.model.js';
+import { UserService } from '../../services/auth/user.service.js';
 import {
   asyncHandler,
   checkField,
@@ -11,7 +11,7 @@ import {
 
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const user = await UserService.findUserByEmail(email);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
 
   const { otp, expiry } = createOTPWithExpiry();
@@ -37,7 +37,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
 export const verifyResetOTP = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
-  const user = await User.findOne({ email });
+  const user = await UserService.findUserByEmail(email);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
 
   checkField(
@@ -60,7 +60,7 @@ export const verifyResetOTP = asyncHandler(async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   const { email, newPassword } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await UserService.findUserByEmail(email);
   checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
 
   checkField(
