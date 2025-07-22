@@ -17,9 +17,7 @@ export class PasswordService {
         STATUS_CODES.BAD_REQUEST
       );
     } catch (error) {
-      // If there's an error in password comparison, log it but don't block the operation
       console.error('Error validating password reuse:', error);
-      // Continue without blocking - better to allow password change than block user
     }
   }
 
@@ -30,7 +28,8 @@ export class PasswordService {
    * @throws {Error} If current password is incorrect
    */
   static async validateCurrentPassword(user, currentPassword) {
-    const isCurrentPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+    const isCurrentPasswordCorrect =
+      await user.isPasswordCorrect(currentPassword);
     checkField(
       !isCurrentPasswordCorrect,
       'Current password is incorrect',
@@ -45,16 +44,16 @@ export class PasswordService {
    * @param {string} newPassword - New password
    */
   static async changePassword(user, currentPassword, newPassword) {
-    // Get user with password field for validation
-    const userWithPassword = await user.constructor.findById(user._id).select('+password');
-    
+    const userWithPassword = await user.constructor
+      .findById(user._id)
+      .select('+password');
+
     // Validate current password
     await this.validateCurrentPassword(userWithPassword, currentPassword);
-    
+
     // Validate password reuse
     await this.validatePasswordReuse(userWithPassword, newPassword);
-    
-    // Set new password (pre-save hook will handle hashing and history)
+
     userWithPassword.password = newPassword;
     await userWithPassword.save();
   }
@@ -65,13 +64,12 @@ export class PasswordService {
    * @param {string} newPassword - New password
    */
   static async resetPassword(user, newPassword) {
-    // Get user with password field for validation
-    const userWithPassword = await user.constructor.findById(user._id).select('+password');
-    
-    // Validate password reuse
+    const userWithPassword = await user.constructor
+      .findById(user._id)
+      .select('+password');
+
     await this.validatePasswordReuse(userWithPassword, newPassword);
-    
-    // Set new password (pre-save hook will handle hashing and history)
+
     userWithPassword.password = newPassword;
     await userWithPassword.save();
   }

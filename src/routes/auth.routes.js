@@ -29,7 +29,7 @@ import {
   resetPassword,
   verifyEmail,
   verifyResetOTP
-} from '../controllers/auth.controller.js';
+} from '../controllers/auth/index.controller.js';
 import {
   multipleUpload,
   rateLimiter,

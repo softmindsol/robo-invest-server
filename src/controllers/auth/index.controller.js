@@ -2,21 +2,21 @@ import {
   register,
   verifyEmail,
   resendOTP
-} from './auth/register.controller.js';
-import { login, logout } from './auth/login.controller.js';
+} from './register.controller.js';
+import { login, logout } from './login.controller.js';
 import {
   forgotPassword,
   verifyResetOTP,
   resetPassword
-} from './auth/reset-password.controller.js';
-import { changePassword } from './auth/change-password.controller.js';
+} from './reset-password.controller.js';
+import { changePassword } from './change-password.controller.js';
 import {
   addAccountType,
   addPersonalDetails,
   addFinancialDetails,
   addBeneficiaryDetails,
   addInvestmentGoals
-} from './auth/profile.controller.js';
+} from './profile.controller.js';
 
 export {
   register,
