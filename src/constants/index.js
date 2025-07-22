@@ -45,3 +45,15 @@ export const ACCOUNT_TYPES = {
   NORMAL: 'Normal',
   SAHULAT: 'Sahulat'
 };
+
+export const SUBSCRIPTION_PLANS = {
+  ROBO_PRO: 'Robo Pro',
+  ROBO_ELITE: 'Robo Elite'
+};
+
+export const PLAN_PRICE_IDS = {
+  ROBO_PRO_MONTHLY: 'price_1Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
+  ROBO_PRO_YEARLY: 'price_2Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
+  ROBO_ELITE_MONTHLY: 'price_3Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
+  ROBO_ELITE_YEARLY: 'price_4Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8' // Replace with actual price ID
+};

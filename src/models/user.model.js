@@ -51,7 +51,12 @@ const UserSchema = new Schema({
   personalDetails: personalDetailsSchema,
   financialDetails: financialDetailsSchema,
   beneficiaryDetails: beneficiaryDetailsSchema,
-  investmentGoals: investmentGoalsSchema
+  investmentGoals: investmentGoalsSchema,
+  subscription: {
+    type: Schema.Types.ObjectId,
+    ref: 'Subscription',
+    default: null
+  }
 });
 
 UserSchema.pre('save', userPreSave);
