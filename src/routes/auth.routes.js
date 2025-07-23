@@ -10,7 +10,6 @@ import {
   loginSchema,
   personalDetailsSchema,
   registerSchema,
-  resendOTPSchema,
   resetPasswordSchema,
   verifyEmailSchema
 } from '../schemas/auth.validator.js';
@@ -42,12 +41,7 @@ const router = new Router();
 router.post('/register', addValidation(registerSchema), register);
 router.post('/verify-email', addValidation(verifyEmailSchema), verifyEmail);
 
-router.post(
-  '/resend-otp',
-  addValidation(resendOTPSchema),
-  rateLimiter,
-  resendOTP
-);
+router.post('/resend-otp', verifyJWT(ROLES.USER), rateLimiter, resendOTP);
 
 router.post(
   '/account-type',
@@ -123,6 +117,7 @@ router.post(
 router.post(
   '/verify-reset-otp',
   addValidation(verifyEmailSchema),
+  rateLimiter,
   verifyResetOTP
 );
 router.post(

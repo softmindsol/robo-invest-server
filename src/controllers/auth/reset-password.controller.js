@@ -5,10 +5,10 @@ import { PasswordService } from '../../services/auth/password.service.js';
 import {
   asyncHandler,
   checkField,
-  //   sendEmail,
+  sendEmail,
   sendResponse
 } from '../../utils/index.js';
-// import { generateOtpEmail } from '../../helper/emailTemplates.js';
+import { generateOtpEmail } from '../../helper/emailTemplates.js';
 
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -23,11 +23,11 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   user.resetPassword = { otp, expiry, verified: false };
 
-  //   await sendEmail({
-  //     to: email,
-  //     subject: 'Reset Your Password - Tijori',
-  //     htmlContent: generateOtpEmail(otp)
-  //   });
+  await sendEmail({
+    to: email,
+    subject: 'Reset Your Password - Tijori',
+    htmlContent: generateOtpEmail(otp)
+  });
 
   await user.save();
 
@@ -71,7 +71,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   // Use PasswordService to reset password with validation
   await PasswordService.resetPassword(user, newPassword);
-  
+
   user.resetPassword = undefined;
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'Password reset successful');

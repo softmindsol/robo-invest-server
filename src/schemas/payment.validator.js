@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { SUBSCRIPTION_PLANS } from '../constants';
+import { SUBSCRIPTION_PLANS } from '../constants/index.js';
 
 export const subscribeToPlanSchema = Joi.object({
   planName: Joi.string()
