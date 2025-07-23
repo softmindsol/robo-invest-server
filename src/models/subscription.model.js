@@ -6,7 +6,6 @@ export const subscriptionSchema = new Schema({
     ref: 'User',
     required: true
   },
-  subscriptionId: { type: String, required: true },
   planName: { type: String, enum: ['Robo Pro', 'Robo Elite'], required: true },
   interval: { type: String, default: 'Monthly', enum: ['Monthly', 'Yearly'] },
   isActive: { type: Boolean },

@@ -1,22 +1,18 @@
-import { PLAN_PRICE_IDS, STATUS_CODES } from '../../constants/index.js';
+import { SubscriptionService } from '../../services/payment/subscription.service.js';
 import { UserService } from '../../services/auth/user.service.js';
-import Subscription from '../../models/subscription.model.js';
 import { asyncHandler, checkField, sendResponse } from '../../utils/index.js';
+import { STATUS_CODES } from '../../constants/index.js';
 
 export const subscribeToPlan = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { planName, interval } = req.body;
 
   await UserService.findUserById(userId);
-  const key = `${planName.replace(' ', '_').toUpperCase()}_${interval.toUpperCase()}`;
-  const priceId = PLAN_PRICE_IDS[key];
 
-  checkField(!priceId, 'Invalid plan/interval combination');
+  await SubscriptionService.getPriceId(planName, interval);
 
-  const currentSub = await Subscription.findOne({
-    user: userId,
-    isActive: true
-  });
+  const currentSub =
+    await SubscriptionService.getCurrentActiveSubscription(userId);
 
   checkField(
     currentSub &&
@@ -26,18 +22,17 @@ export const subscribeToPlan = asyncHandler(async (req, res) => {
   );
 
   if (currentSub) {
-    currentSub.isActive = false;
-    currentSub.endDate = new Date();
-    await currentSub.save();
+    await SubscriptionService.cancelSubscription(currentSub);
   }
 
-  await Subscription.create({
-    user: userId,
+  const newSubscription = await SubscriptionService.createSubscription(
+    userId,
     planName,
-    interval,
-    isActive: true,
-    startDate: new Date(),
-    subscriptionId: priceId
+    interval
+  );
+
+  await UserService.updateUserDetails(userId, {
+    subscription: newSubscription._id
   });
 
   sendResponse(
