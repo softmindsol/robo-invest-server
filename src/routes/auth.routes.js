@@ -13,6 +13,7 @@ import {
   resetPasswordSchema,
   termsValidationSchema,
   verifyEmailSchema
+  refreshTokenSchema
 } from '../schemas/auth.validator.js';
 import {
   addAccountType,
@@ -30,6 +31,13 @@ import {
   resetPassword,
   verifyEmail,
   verifyResetOTP
+} from '../controllers/auth/index.controller.js';
+import {
+  refreshToken,
+  revokeToken,
+  revokeAllTokens,
+  getUserSessions,
+  revokeSession
 } from '../controllers/auth/index.controller.js';
 import {
   multipleUpload,
@@ -134,5 +142,12 @@ router.post(
   addValidation(resetPasswordSchema),
   resetPassword
 );
+
+// Token management routes
+router.post('/refresh-token', addValidation(refreshTokenSchema), refreshToken);
+router.post('/revoke-token', addValidation(refreshTokenSchema), revokeToken);
+router.post('/revoke-all-tokens', verifyJWT([ROLES.USER]), revokeAllTokens);
+router.get('/sessions', verifyJWT([ROLES.USER]), getUserSessions);
+router.delete('/sessions/:sessionId', verifyJWT([ROLES.USER]), revokeSession);
 
 export default router;
