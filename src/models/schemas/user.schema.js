@@ -135,10 +135,10 @@ export const beneficiaryDetailsSchema = new Schema(
     relationship: { type: String },
     uploadFrontSideOfCNIC: { type: String },
     uploadBackSideOfCNIC: { type: String },
-    fatcaCompliance: fatcaComplianceSchema,
-    standardDueDiligence: standardDueDiligenceSchema,
-    isForeigner: { type: Boolean },
-    passportDetails: passportDetailsSchema
+    fatcaCompliance: fatcaComplianceSchema, // Normal Account Type
+    standardDueDiligence: standardDueDiligenceSchema, // Normal Account type
+    isForeigner: { type: Boolean }, // Sahulat Account Type
+    passportDetails: passportDetailsSchema // Sahulat Account Type
   },
   { _id: false }
 );
@@ -227,6 +227,26 @@ export const passwordHistorySchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now
+    }
+  },
+  { _id: false }
+);
+
+export const termsAndConditionsSchema = new Schema(
+  {
+    informationConfirmation: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    acceptTerms: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    acceptedAt: {
+      type: Date,
+      default: null
     }
   },
   { _id: false }

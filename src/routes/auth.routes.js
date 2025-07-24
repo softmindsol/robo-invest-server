@@ -11,6 +11,7 @@ import {
   personalDetailsSchema,
   registerSchema,
   resetPasswordSchema,
+  termsValidationSchema,
   verifyEmailSchema
 } from '../schemas/auth.validator.js';
 import {
@@ -19,6 +20,7 @@ import {
   addFinancialDetails,
   addInvestmentGoals,
   addPersonalDetails,
+  addTermsAcceptance,
   changePassword,
   forgotPassword,
   login,
@@ -97,6 +99,13 @@ router.post(
   verifyJWT([ROLES.USER]),
   addValidation(investmentGoalsSchema),
   addInvestmentGoals
+);
+
+router.post(
+  '/terms-acceptance',
+  verifyJWT([ROLES.USER]),
+  addValidation(termsValidationSchema),
+  addTermsAcceptance
 );
 
 router.post('/login', addValidation(loginSchema), login);

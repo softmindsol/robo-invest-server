@@ -16,13 +16,19 @@ export const verifyJWT = (roles = []) =>
       checkField(!user, MESSAGES.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
 
       if (roles.length && !roles.includes(user.role)) {
-        return handleError(next, STATUS_CODES.FORBIDDEN, MESSAGES.FORBIDDEN);
+        handleError(next, STATUS_CODES.FORBIDDEN, MESSAGES.FORBIDDEN);
       }
 
       req.user = user;
-
       next();
-    } catch {
-      handleError(next, STATUS_CODES.UNAUTHORIZED, MESSAGES.UNAUTHORIZED);
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        handleError(
+          next,
+          STATUS_CODES.UNAUTHORIZED,
+          'Session expired. Please log in again.'
+        );
+      }
+      handleError(next, STATUS_CODES.UNAUTHORIZED, 'Invalid token');
     }
   });

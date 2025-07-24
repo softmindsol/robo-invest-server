@@ -439,6 +439,16 @@ const changePasswordSchema = Joi.object({
     })
 });
 
+const termsValidationSchema = Joi.object({
+  informationConfirmation: Joi.boolean().valid(true).required().messages({
+    'any.only': 'You must confirm the correctness of the information.'
+  }),
+
+  acceptTerms: Joi.boolean().valid(true).required().messages({
+    'any.only': 'You must accept the terms and conditions.'
+  })
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -451,5 +461,6 @@ export {
   investmentGoalsSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  changePasswordSchema
+  changePasswordSchema,
+  termsValidationSchema
 };

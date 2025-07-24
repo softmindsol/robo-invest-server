@@ -1,8 +1,4 @@
-import {
-  register,
-  verifyEmail,
-  resendOTP
-} from './register.controller.js';
+import { register, verifyEmail, resendOTP } from './register.controller.js';
 import { login, logout } from './login.controller.js';
 import {
   forgotPassword,
@@ -15,7 +11,8 @@ import {
   addPersonalDetails,
   addFinancialDetails,
   addBeneficiaryDetails,
-  addInvestmentGoals
+  addInvestmentGoals,
+  addTermsAcceptance
 } from './profile.controller.js';
 
 export {
@@ -32,5 +29,6 @@ export {
   forgotPassword,
   verifyResetOTP,
   resetPassword,
-  changePassword
+  changePassword,
+  addTermsAcceptance
 };

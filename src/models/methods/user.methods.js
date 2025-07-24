@@ -73,7 +73,6 @@ export const userMethods = {
           return true;
         }
       } catch (error) {
-        // Skip this entry if bcrypt comparison fails
         console.error('Error comparing password with history:', error);
         continue;
       }

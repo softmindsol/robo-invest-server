@@ -152,3 +152,26 @@ export const addInvestmentGoals = asyncHandler(async (req, res) => {
     'Investment goals updated successfully'
   );
 });
+
+export const addTermsAcceptance = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const termsBody = req.body;
+  const user = await UserService.findUserById(userId);
+
+  if (!user.termsAndConditions) {
+    user.termsAndConditions = {};
+  }
+
+  user.termsAndConditions = {
+    ...termsBody,
+    acceptedAt: new Date()
+  };
+
+  await user.save();
+
+  sendResponse(
+    res,
+    STATUS_CODES.SUCCESS,
+    'Terms & Conditions accepted successfully'
+  );
+});

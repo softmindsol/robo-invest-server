@@ -6,7 +6,8 @@ import {
   beneficiaryDetailsSchema,
   investmentGoalsSchema,
   resetPasswordSchema,
-  passwordHistorySchema
+  passwordHistorySchema,
+  termsAndConditionsSchema
 } from './schemas/user.schema.js';
 import { userMethods, userPreSave } from './methods/user.methods.js';
 
@@ -52,6 +53,7 @@ const UserSchema = new Schema({
   financialDetails: financialDetailsSchema,
   beneficiaryDetails: beneficiaryDetailsSchema,
   investmentGoals: investmentGoalsSchema,
+  termsAndConditions: termsAndConditionsSchema,
   subscription: {
     type: Schema.Types.ObjectId,
     ref: 'Subscription',
