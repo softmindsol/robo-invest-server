@@ -3,7 +3,6 @@ import { MESSAGES, STATUS_CODES } from '../constants/index.js';
 import Users from '../models/user.model.js';
 import { asyncHandler, checkField, handleError } from '../utils/index.js';
 import { ACCESS_TOKEN_SECRET } from '../configs/env.config.js';
-import { TokenService } from '../services/auth/token.service.js';
 
 export const verifyJWT = (roles = []) =>
   asyncHandler(async (req, _, next) => {
@@ -11,9 +10,10 @@ export const verifyJWT = (roles = []) =>
       const token = req.headers.authorization?.split(' ')[1];
 
       checkField(!token, MESSAGES.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET);
+      const user = await Users.findById(decodedToken?._id).select('-password');
 
-      // Validate access token using TokenService
-      const { user } = await TokenService.validateAccessToken(token);
+      checkField(!user, MESSAGES.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
 
       if (roles.length && !roles.includes(user.role)) {
         handleError(next, STATUS_CODES.FORBIDDEN, MESSAGES.FORBIDDEN);
@@ -26,10 +26,8 @@ export const verifyJWT = (roles = []) =>
         handleError(
           next,
           STATUS_CODES.UNAUTHORIZED,
-          'Access token expired. Please refresh your token or log in again.'
+          'Session expired. Please log in again.'
         );
-      } else if (error.message.includes('expired')) {
-        handleError(next, STATUS_CODES.UNAUTHORIZED, error.message);
       }
       handleError(next, STATUS_CODES.UNAUTHORIZED, 'Invalid token');
     }

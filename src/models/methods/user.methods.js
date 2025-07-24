@@ -2,9 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {
   ACCESS_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRY,
-  REFRESH_TOKEN_SECRET,
-  REFRESH_TOKEN_EXPIRY
+  ACCESS_TOKEN_EXPIRY
 } from '../../configs/env.config.js';
 
 export const userMethods = {
@@ -23,20 +21,6 @@ export const userMethods = {
       ACCESS_TOKEN_SECRET,
       {
         expiresIn: ACCESS_TOKEN_EXPIRY
-      }
-    );
-  },
-
-  generateRefreshToken: function () {
-    return jwt.sign(
-      {
-        _id: this._id,
-        email: this.email,
-        tokenType: 'refresh'
-      },
-      REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: REFRESH_TOKEN_EXPIRY
       }
     );
   },

@@ -7,7 +7,6 @@ import {
 import { userDB } from '../../instances/db.instance.js';
 import { STATUS_CODES } from '../../constants/index.js';
 import { UserService } from '../../services/auth/user.service.js';
-import { TokenService } from '../../services/auth/token.service.js';
 
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -39,28 +38,19 @@ export const login = asyncHandler(async (req, res, next) => {
     checkField(!isPasswordCorrect, 'Invalid email or password');
   }
 
-  const deviceInfo = TokenService.extractDeviceInfo(req);
-  const { accessToken, refreshToken } = await TokenService.generateTokenPair(user, deviceInfo);
+  const accessToken = await UserService.generateAndSaveToken(user);
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'User logged in successfully', {
-    accessToken,
-    refreshToken
+    accessToken
   });
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.body;
-  const accessToken = req.headers['authorization']?.split(' ')[1];
+  const accessToken = req?.headers['authorization']?.split(' ')[1];
   const userId = req.user._id;
 
   checkField(!accessToken, 'You are already logged out');
 
-  // Revoke refresh token if provided
-  if (refreshToken) {
-    await TokenService.revokeRefreshToken(refreshToken, 'user', 'User logout');
-  }
-
-  // Remove access token from user document
   const user = await userDB.removeAccessToken(userId, accessToken);
 
   checkField(!user, 'User not found or session expired');

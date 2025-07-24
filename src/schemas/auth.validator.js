@@ -449,13 +449,6 @@ const termsValidationSchema = Joi.object({
   })
 });
 
-const refreshTokenSchema = Joi.object({
-  refreshToken: Joi.string().required().messages({
-    'string.empty': 'Refresh token is required',
-    'any.required': 'Refresh token is required'
-  })
-});
-
 export {
   registerSchema,
   loginSchema,
@@ -469,6 +462,5 @@ export {
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
-  termsValidationSchema,
-  refreshTokenSchema
+  termsValidationSchema
 };

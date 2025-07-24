@@ -14,13 +14,6 @@ import {
   addInvestmentGoals,
   addTermsAcceptance
 } from './profile.controller.js';
-import {
-  refreshToken,
-  revokeToken,
-  revokeAllTokens,
-  getUserSessions,
-  revokeSession
-} from './token.controller.js';
 
 export {
   register,
@@ -37,10 +30,5 @@ export {
   verifyResetOTP,
   resetPassword,
   changePassword,
-  addTermsAcceptance,
-  refreshToken,
-  revokeToken,
-  revokeAllTokens,
-  getUserSessions,
-  revokeSession
+  addTermsAcceptance
 };
