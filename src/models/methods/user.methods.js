@@ -1,9 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import {
-  ACCESS_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRY
-} from '../../configs/env.config.js';
+import { ACCESS_TOKEN_SECRET } from '../../configs/env.config.js';
 
 export const userMethods = {
   isPasswordCorrect: async function (password) {
@@ -18,10 +15,7 @@ export const userMethods = {
         role: this.role,
         accountType: this.accountType
       },
-      ACCESS_TOKEN_SECRET,
-      {
-        expiresIn: ACCESS_TOKEN_EXPIRY
-      }
+      ACCESS_TOKEN_SECRET
     );
   },
 

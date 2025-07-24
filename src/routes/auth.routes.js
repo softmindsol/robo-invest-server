@@ -32,6 +32,7 @@ import {
   verifyResetOTP
 } from '../controllers/auth/index.controller.js';
 import {
+  injectAccountType,
   multipleUpload,
   rateLimiter,
   verifyJWT
@@ -66,6 +67,7 @@ router.post(
 router.post(
   '/financial-details',
   verifyJWT([ROLES.USER]),
+  injectAccountType,
   multipleUpload('documents').fields([
     { name: 'proofOfIncome', maxCount: 1 },
     { name: 'proofOfEmployment', maxCount: 1 },
@@ -80,6 +82,7 @@ router.post(
 router.post(
   '/beneficiaries',
   verifyJWT([ROLES.USER]),
+  injectAccountType,
   multipleUpload('documents').fields([
     { name: 'uploadFrontSideOfCNIC', maxCount: 1 },
     { name: 'uploadBackSideOfCNIC', maxCount: 1 },

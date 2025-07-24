@@ -1,7 +1,7 @@
 import { verifyJWT } from './auth.middleware.js';
 import { upload, multipleUpload } from './multer.middleware.js';
 import rateLimiter from './rate-limiter.middleware.js';
-import checkAccountLock from './account-lock.middleware.js';
+import { checkAccountLock, injectAccountType } from './account.middleware.js';
 import {
   objectIdValidator,
   fileValidator,
@@ -16,5 +16,6 @@ export {
   objectIdValidator,
   fileValidator,
   fileDelete,
-  checkAccountLock
+  checkAccountLock,
+  injectAccountType
 };
