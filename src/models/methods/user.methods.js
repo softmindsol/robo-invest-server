@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../../configs/env.config.js';
+import logger from '../../utils/logger.js';
 
 export const userMethods = {
   isPasswordCorrect: async function (password) {
@@ -67,7 +68,7 @@ export const userMethods = {
           return true;
         }
       } catch (error) {
-        console.error('Error comparing password with history:', error);
+        logger.error('Error comparing password with history:', error);
         continue;
       }
     }

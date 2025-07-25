@@ -1,5 +1,6 @@
 import { checkField } from '../../utils/index.js';
 import { STATUS_CODES } from '../../constants/index.js';
+import logger from '../../utils/logger.js';
 
 export class PasswordService {
   /**
@@ -17,7 +18,7 @@ export class PasswordService {
         STATUS_CODES.BAD_REQUEST
       );
     } catch (error) {
-      console.error('Error validating password reuse:', error);
+      logger.error('Error validating password reuse:', error);
     }
   }
 
