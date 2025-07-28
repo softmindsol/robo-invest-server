@@ -9,16 +9,24 @@ import {
 export class UserService {
   static async checkEmailExists(email) {
     const existingEmail = await userDB.findOne({ email });
-    checkField(existingEmail, 'Email already exists');
+    checkField(existingEmail, 'Email already exists', STATUS_CODES.CONFLICT);
   }
 
   static async checkUsernameExists(username) {
     const existingUsername = await userDB.findOne({ username });
-    checkField(existingUsername, 'Username already exists');
+    checkField(
+      existingUsername,
+      'Username already exists',
+      STATUS_CODES.CONFLICT
+    );
   }
   static async checkPhoneNumberExists(phoneNumber) {
     const existingPhone = await userDB.findOne({ phoneNumber });
-    checkField(existingPhone, 'Phone number already exists');
+    checkField(
+      existingPhone,
+      'Phone number already exists',
+      STATUS_CODES.CONFLICT
+    );
   }
 
   static async findUserByEmail(email, selectPassword = false) {
