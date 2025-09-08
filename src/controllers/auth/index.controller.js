@@ -6,14 +6,6 @@ import {
   resetPassword
 } from './reset-password.controller.js';
 import { changePassword } from './change-password.controller.js';
-import {
-  addAccountType,
-  addPersonalDetails,
-  addFinancialDetails,
-  addBeneficiaryDetails,
-  addInvestmentGoals,
-  addTermsAcceptance
-} from './profile.controller.js';
 
 export {
   register,
@@ -21,14 +13,8 @@ export {
   logout,
   verifyEmail,
   resendOTP,
-  addAccountType,
-  addPersonalDetails,
-  addFinancialDetails,
-  addBeneficiaryDetails,
-  addInvestmentGoals,
   forgotPassword,
   verifyResetOTP,
   resetPassword,
-  changePassword,
-  addTermsAcceptance
+  changePassword
 };

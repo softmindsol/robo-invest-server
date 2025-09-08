@@ -49,10 +49,10 @@ const UserSchema = new Schema({
     type: String,
     enum: ['normal', 'sahulat']
   },
-  personalDetails: personalDetailsSchema,
-  financialDetails: financialDetailsSchema,
-  beneficiaryDetails: beneficiaryDetailsSchema,
-  investmentGoals: investmentGoalsSchema,
+  personal: personalDetailsSchema,
+  financial: financialDetailsSchema,
+  beneficiary: beneficiaryDetailsSchema,
+  investment: investmentGoalsSchema,
   subscription: {
     type: Schema.Types.ObjectId,
     ref: 'Subscription',

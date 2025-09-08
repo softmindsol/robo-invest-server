@@ -4,16 +4,13 @@ import { verifyJWT, multipleUpload } from '../../middlewares/index.js';
 import { ROLES } from '../../constants/index.js';
 import {
   getUserProfile,
-  updatePersonalInformation,
-  getProfileCompletion
+  updatePersonalInformation
 } from '../../controllers/user/profile.controller.js';
 import { updatePersonalInfoSchema } from '../../schemas/profile.validator.js';
 
 const router = new Router();
 
 router.get('/', verifyJWT([ROLES.USER]), getUserProfile);
-
-router.get('/completion', verifyJWT([ROLES.USER]), getProfileCompletion);
 
 router.put(
   '/personal',

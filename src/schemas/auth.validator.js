@@ -93,7 +93,7 @@ const accountTypeSchema = Joi.object({
   })
 });
 
-const personalDetailsSchema = Joi.object({
+const personalSchema = Joi.object({
   firstName: Joi.string().min(2).required().messages({
     'string.base': 'First Name must be a valid string',
     'string.empty': 'First Name is required',
@@ -108,7 +108,7 @@ const personalDetailsSchema = Joi.object({
     'any.required': 'Last Name is required'
   }),
 
-  CNICNumber: Joi.string()
+  cnic: Joi.string()
     .length(13)
     .pattern(/^[0-9]+$/)
     .required()
@@ -146,7 +146,7 @@ const personalDetailsSchema = Joi.object({
         'Marital Status must be one of Single, Married, Divorced, or Widowed'
     }),
 
-  dateOfBirth: Joi.date().less('now').required().messages({
+  dob: Joi.date().less('now').required().messages({
     'any.required': 'Date of Birth is required',
     'date.less': 'Date of Birth must be in the past'
   }),
@@ -159,18 +159,16 @@ const personalDetailsSchema = Joi.object({
     'any.required': 'Permanent Address is required'
   }),
 
-  fathersOrHusbandsName: Joi.object({
-    selection: Joi.string().valid('Father', 'Husband').required().messages({
-      'string.base': 'You must select either Father or Husband',
-      'any.required': 'Selection is required',
-      'any.only': 'Selection must be either Father or Husband'
-    }),
-    name: Joi.string().min(2).required().messages({
-      'string.base': 'Father’s/Husband’s Name must be a valid string',
-      'string.empty': 'Father’s/Husband’s Name cannot be empty',
-      'any.required': 'Father’s/Husband’s Name is required'
-    })
-  }).required(),
+  nameType: Joi.string().valid('Father', 'Husband').required().messages({
+    'string.base': 'You must select either Father or Husband',
+    'any.required': 'Selection is required',
+    'any.only': 'Selection must be either Father or Husband'
+  }),
+  fatherOrHusband: Joi.string().min(2).required().messages({
+    'string.base': 'Father’s/Husband’s Name must be a valid string',
+    'string.empty': 'Father’s/Husband’s Name cannot be empty',
+    'any.required': 'Father’s/Husband’s Name is required'
+  }),
 
   mothersName: Joi.string().min(2).required().messages({
     'string.base': 'Mother’s Name must be a valid string',
@@ -178,7 +176,7 @@ const personalDetailsSchema = Joi.object({
     'any.required': 'Mother’s Name is required'
   }),
 
-  placeOfBirth: Joi.string().min(2).max(100).required().messages({
+  birthPlace: Joi.string().min(2).max(100).required().messages({
     'string.base': 'Place of Birth must be a valid string',
     'string.empty': 'Place of Birth cannot be empty',
     'any.required': 'Place of Birth is required'
@@ -194,18 +192,18 @@ const personalDetailsSchema = Joi.object({
     'any.only': 'Dual Nationality must be true or false'
   }),
 
-  isPakistaniResident: Joi.boolean()
+  pakistaniCitizen: Joi.boolean()
     .valid(true)
-    .when('accountType', {
+    .when('$accountType', {
       is: 'sahulat',
       then: Joi.required().messages({
-        'any.required': 'You must be a Pakistani Resident to open this account'
+        'any.required': 'You must be a Pakistani Citizen to open this account'
       })
     })
     .optional()
 });
 
-const financialDetailsSchema = Joi.object({
+const financialSchema = Joi.object({
   occupation: Joi.string().required(),
   occupationIndustry: Joi.string().required(),
   incomeSource: Joi.string().required(),
@@ -213,6 +211,10 @@ const financialDetailsSchema = Joi.object({
   employerCountry: Joi.string().required(),
   yearsEmployed: Joi.number().min(0).required(),
   salaryAmount: Joi.number().min(0).required(),
+  taxFilingStatus: Joi.boolean().required(),
+  ntn: Joi.string().required(),
+  deductZakat: Joi.boolean().default(false),
+  investmentAccount: Joi.boolean().default(false),
   grossAnnualIncome: Joi.when('$accountType', {
     is: 'normal',
     then: Joi.number().min(0).required(),
@@ -222,11 +224,7 @@ const financialDetailsSchema = Joi.object({
     is: 'normal',
     then: Joi.number().min(0).required(),
     otherwise: Joi.forbidden()
-  }),
-  taxFilingStatus: Joi.boolean().required(),
-  NTN: Joi.string().allow('', null),
-  deductZakat: Joi.boolean().default(false),
-  existingInvestmentAccount: Joi.boolean().required()
+  })
 });
 
 const beneficiariesSchema = Joi.object({
@@ -443,28 +441,17 @@ const changePasswordSchema = Joi.object({
     })
 });
 
-const termsValidationSchema = Joi.object({
-  informationConfirmation: Joi.boolean().valid(true).required().messages({
-    'any.only': 'You must confirm the correctness of the information.'
-  }),
-
-  acceptTerms: Joi.boolean().valid(true).required().messages({
-    'any.only': 'You must accept the terms and conditions.'
-  })
-});
-
 export {
   registerSchema,
   loginSchema,
   verifyEmailSchema,
   resendOTPSchema,
   accountTypeSchema,
-  personalDetailsSchema,
-  financialDetailsSchema,
+  personalSchema,
+  financialSchema,
   beneficiariesSchema,
   investmentGoalsSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  changePasswordSchema,
-  termsValidationSchema
+  changePasswordSchema
 };
