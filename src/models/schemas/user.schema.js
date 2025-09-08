@@ -232,22 +232,3 @@ export const passwordHistorySchema = new Schema(
   { _id: false }
 );
 
-export const termsAndConditionsSchema = new Schema(
-  {
-    informationConfirmation: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    acceptTerms: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    acceptedAt: {
-      type: Date,
-      default: null
-    }
-  },
-  { _id: false }
-);

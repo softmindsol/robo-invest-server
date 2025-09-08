@@ -48,7 +48,11 @@ const registerSchema = Joi.object({
       'string.max': 'Password must not exceed 128 characters',
       'string.pattern.base':
         'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character'
-    })
+    }),
+
+  termsAccepted: Joi.boolean().valid(true).required().messages({
+    'any.only': 'You must accept the terms and conditions.'
+  })
 });
 
 const loginSchema = Joi.object({
@@ -83,9 +87,9 @@ const resendOTPSchema = Joi.object({
 });
 
 const accountTypeSchema = Joi.object({
-  accountType: Joi.string().valid('Normal', 'Sahulat').required().messages({
+  accountType: Joi.string().valid('normal', 'sahulat').required().messages({
     'any.required': 'Account type is required',
-    'string.valid': 'Account type must be either "Normal" or "Sahulat"'
+    'string.valid': 'Account type must be either "normal" or "sahulat"'
   })
 });
 
@@ -193,7 +197,7 @@ const personalDetailsSchema = Joi.object({
   isPakistaniResident: Joi.boolean()
     .valid(true)
     .when('accountType', {
-      is: 'Sahulat',
+      is: 'sahulat',
       then: Joi.required().messages({
         'any.required': 'You must be a Pakistani Resident to open this account'
       })
@@ -210,12 +214,12 @@ const financialDetailsSchema = Joi.object({
   yearsEmployed: Joi.number().min(0).required(),
   salaryAmount: Joi.number().min(0).required(),
   grossAnnualIncome: Joi.when('$accountType', {
-    is: 'Normal',
+    is: 'normal',
     then: Joi.number().min(0).required(),
     otherwise: Joi.forbidden()
   }),
   numberOfDependents: Joi.when('$accountType', {
-    is: 'Normal',
+    is: 'normal',
     then: Joi.number().min(0).required(),
     otherwise: Joi.forbidden()
   }),
@@ -269,7 +273,7 @@ const beneficiariesSchema = Joi.object({
   }),
 
   fatcaCompliance: Joi.when('$accountType', {
-    is: 'Normal',
+    is: 'normal',
     then: Joi.object({
       hasUSCitizenshipOrGreenCard: Joi.boolean(),
       bornInUSA: Joi.boolean(),
@@ -304,7 +308,7 @@ const beneficiariesSchema = Joi.object({
   }),
 
   standardDueDiligence: Joi.when('$accountType', {
-    is: 'Normal',
+    is: 'normal',
     then: Joi.object({
       isPEP: Joi.boolean(),
       pepDetails: Joi.string().allow('').when('isPEP', {

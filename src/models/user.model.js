@@ -6,8 +6,7 @@ import {
   beneficiaryDetailsSchema,
   investmentGoalsSchema,
   resetPasswordSchema,
-  passwordHistorySchema,
-  termsAndConditionsSchema
+  passwordHistorySchema
 } from './schemas/user.schema.js';
 import { userMethods, userPreSave } from './methods/user.methods.js';
 
@@ -18,6 +17,7 @@ const UserSchema = new Schema({
   username: { type: String, required: true, unique: true },
   phoneNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
+  termsAccepted: { type: Boolean, default: false },
   role: {
     type: String,
     enum: ['User', 'Admin'],
@@ -26,10 +26,6 @@ const UserSchema = new Schema({
   accessToken: {
     type: [String],
     default: []
-  },
-  accountType: {
-    type: String,
-    enum: ['Normal', 'Sahulat']
   },
   emailVerification: emailVerificationSchema,
   resetPassword: resetPasswordSchema,
@@ -49,11 +45,14 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  accountType: {
+    type: String,
+    enum: ['normal', 'sahulat']
+  },
   personalDetails: personalDetailsSchema,
   financialDetails: financialDetailsSchema,
   beneficiaryDetails: beneficiaryDetailsSchema,
   investmentGoals: investmentGoalsSchema,
-  termsAndConditions: termsAndConditionsSchema,
   subscription: {
     type: Schema.Types.ObjectId,
     ref: 'Subscription',

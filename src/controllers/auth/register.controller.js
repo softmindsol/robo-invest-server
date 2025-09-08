@@ -22,7 +22,7 @@ export const register = asyncHandler(async (req, res) => {
   await sendEmail({
     to: email,
     subject: 'Your Email Verification OTP - Tijori Robo Investing',
-    htmlContent: generateOtpEmail(otp)
+    htmlContent: generateOtpEmail(otp, username)
   });
 
   const newUserData = {
@@ -82,7 +82,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
   await sendEmail({
     to: user.email,
     subject: 'Your New OTP - Tijori Robo Investing',
-    htmlContent: generateOtpEmail(otp)
+    htmlContent: generateOtpEmail(otp, user.username)
   });
 
   user.emailVerification.otp = otp;
