@@ -31,192 +31,97 @@ export const resetPasswordSchema = new Schema(
   { _id: false }
 );
 
-export const personalDetailsSchema = new Schema(
-  {
-    firstName: { type: String },
-    lastName: { type: String },
-    CNICNumber: { type: String, unique: true },
-    issueDate: { type: Date },
-    expireDate: { type: Date },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
-    maritalStatus: {
-      type: String,
-      enum: ['Single', 'Married', 'Divorced', 'Widowed']
-    },
-    dateOfBirth: { type: Date },
-    permanentAddress: { type: String },
-    fathersOrHusbandsName: {
-      selection: { type: String, enum: ['Father', 'Husband'] },
-      name: { type: String }
-    },
-    mothersName: { type: String },
-    placeOfBirth: { type: String },
-    nationality: { type: String },
-    uploadFrontSideOfCNIC: { type: String },
-    uploadBackSideOfCNIC: { type: String },
-    dualNationality: { type: Boolean },
-    isPakistaniResident: {
-      type: Boolean,
-      default: false,
-      required: function () {
-        return this.accountType === 'Sahulat';
-      }
-    }
+export const personalDetailsSchema = new Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  cnic: { type: String, required: true, unique: true },
+  issueDate: { type: Date, required: true },
+  expireDate: { type: Date, required: true },
+  gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+  maritalStatus: {
+    type: String,
+    enum: ['Single', 'Married', 'Divorced', 'Widowed'],
+    required: true
   },
-  { _id: false }
-);
+  dob: { type: Date, required: true },
+  permanentAddress: { type: String, required: true },
+  nameType: { type: String, enum: ['Father', 'Husband'], default: 'Father' },
+  fatherOrHusband: { type: String, required: true },
+  motherName: { type: String, required: true },
+  birthPlace: { type: String, required: true },
+  nationality: { type: String },
+  cnicFront: { type: String }, // Storing URL or path to uploaded file
+  cnicBack: { type: String }, // Storing URL or path to uploaded file
+  dualNationality: { type: Boolean, default: false },
+  pakistaniCitizen: { type: Boolean } // Conditional for Sahulat
+});
 
-export const financialDetailsSchema = new Schema(
-  {
-    occupation: { type: String },
-    occupationIndustry: { type: String },
-    incomeSource: { type: String },
-    employerAddress: { type: String },
-    employerCountry: { type: String },
-    yearsEmployed: { type: Number },
-    salaryAmount: { type: Number },
-    grossAnnualIncome: { type: Number }, // Only for Normal
-    numberOfDependents: { type: Number }, // Only for Normal
-    proofOfIncome: { type: String }, // Only for Normal
-    proofOfEmployment: { type: String }, // Only for Normal
-    companyLetterhead: { type: String }, // Only for Normal
-    taxFilingStatus: { type: Boolean, default: false },
-    NTN: { type: String },
-    deductZakat: { type: Boolean, default: false },
-    existingInvestmentAccount: { type: Boolean, default: false }
-  },
-  { _id: false }
-);
+export const financialDetailsSchema = new Schema({
+  occupation: { type: String, required: true },
+  occupationIndustry: { type: String, required: true },
+  incomeSource: { type: String, required: true },
+  employerAddress: { type: String, required: true },
+  employerCountry: { type: String },
+  yearsEmployed: { type: Number },
+  salaryAmount: { type: Number },
+  taxFilingStatus: { type: Boolean, default: false },
+  ntn: { type: String },
+  deductZakat: { type: Boolean, default: false },
+  investmentAccount: { type: Boolean, default: false },
 
-export const fatcaComplianceSchema = new Schema(
-  {
-    hasUSCitizenshipOrGreenCard: { type: Boolean },
-    bornInUSA: { type: Boolean },
-    hasUSAddress: { type: Boolean },
-    USAddress: { type: String },
-    hasUSTelephone: { type: Boolean },
-    USTelephone: { type: String },
-    POAWithUSTransferAgent: { type: Boolean }
-  },
-  { _id: false }
-);
+  // Conditional for Normal account type
+  grossAnnualIncome: { type: Number },
+  numberOfDependents: { type: Number },
+  proofOfIncome: { type: String }, // URL/path
+  proofOfEmployment: { type: String }, // URL/path
+  companyLetterhead: { type: String } // URL/path
+});
 
-export const standardDueDiligenceSchema = new Schema(
-  {
-    isPEP: { type: Boolean },
-    pepDetails: { type: String },
-    hasRefusedAccount: { type: Boolean },
-    refusalDetails: { type: String },
-    hasOffshoreLinks: { type: Boolean },
-    offshoreLinksDetails: { type: String },
-    ownsHighValueItems: { type: Boolean },
-    highValueDetails: { type: String }
-  },
-  { _id: false }
-);
+export const beneficiaryDetailsSchema = new Schema({
+  name: { type: String, required: true },
+  cnic: { type: String, required: true },
+  relationship: { type: String, required: true },
+  address: { type: String, required: true },
+  contactNumber: { type: String, required: true },
+  cnicFront: { type: String },
+  cnicBack: { type: String },
 
-export const passportDetailsSchema = new Schema(
-  {
-    passportNumber: { type: String },
-    placeOfIssue: { type: String },
-    dateOfIssue: { type: Date },
-    dateOfExpiry: { type: Date },
-    uploadMainPassportPage: { type: String }
-  },
-  { _id: false }
-);
+  // Conditional for Normal account type (FATCA / SDD)
+  isUsCitizen: { type: Boolean },
+  isUsResident: { type: Boolean },
+  hasUsAddress: { type: Boolean },
+  usAddressEmail: { type: String },
+  hasUsTelephone: { type: Boolean },
+  usTelephoneNumber: { type: String },
+  usAuthorizedSignatory: { type: String },
+  isPublicFigure: { type: Boolean },
+  publicFigureDetails: { type: String },
+  isAccountRefusal: { type: Boolean },
+  accountRefusalDetails: { type: String },
+  hasOffshoreLinks: { type: Boolean },
+  offshoreLinksDetails: { type: String },
+  hasHighValueDeals: { type: Boolean },
+  highValueDealsDetails: { type: String },
 
-export const beneficiaryDetailsSchema = new Schema(
-  {
-    name: { type: String },
-    CNICNumber: { type: String },
-    address: { type: String },
-    contactNumber: { type: String },
-    relationship: { type: String },
-    uploadFrontSideOfCNIC: { type: String },
-    uploadBackSideOfCNIC: { type: String },
-    fatcaCompliance: fatcaComplianceSchema, // Normal Account Type
-    standardDueDiligence: standardDueDiligenceSchema, // Normal Account type
-    isForeigner: { type: Boolean }, // Sahulat Account Type
-    passportDetails: passportDetailsSchema // Sahulat Account Type
-  },
-  { _id: false }
-);
+  // Conditional for Sahulat account type (Foreigner / Passport)
+  isForeigner: { type: Boolean },
+  passportNumber: { type: String },
+  placeOfIssue: { type: String },
+  dateOfIssue: { type: Date },
+  dateOfExpiry: { type: Date },
+  passportUpload: { type: String } // URL/path
+});
 
-export const investmentGoalsSchema = new Schema(
-  {
-    objective: {
-      type: String,
-      enum: [
-        'Retirement',
-        'Higher Education',
-        'Buy property',
-        'Long term wealth'
-      ],
-      default: 'Retirement'
-    },
-    timeHorizon: {
-      type: String,
-      enum: [
-        '1 to 2 years',
-        '3 to 5 years',
-        '6 to 10 years',
-        '11 to 20 years',
-        'Over 20 years'
-      ],
-      default: '1 to 2 years'
-    },
-    monthlyIncome: {
-      type: String,
-      enum: [
-        '25,000 to 50,000',
-        '50,000 to 100,000',
-        '100,000 to 200,000',
-        '200,000 to 500,000',
-        '500,000 to 1 million',
-        'Rs. 1 million +'
-      ],
-      default: '25,000 to 50,000'
-    },
-    educationLevel: {
-      type: String,
-      enum: [
-        'Matric',
-        'Intermediate',
-        'A Levels',
-        'Bachelors',
-        'Masters or Higher'
-      ],
-      default: 'Matric'
-    },
-    investmentExperience: {
-      type: String,
-      enum: ['Beginner', 'Intermediate', 'Advance'],
-      default: 'Beginner'
-    },
-    totalNetWorth: {
-      type: String,
-      enum: [
-        'Under Rs. 1 million',
-        'Between Rs. 1 and 3 million',
-        'Between Rs. 5 and 10 million',
-        'More than Rs. 10 million'
-      ],
-      default: 'Under Rs. 1 million'
-    },
-    dependentsOnIncome: {
-      type: String,
-      enum: ['0', '1', '2 or more', '4 or more'],
-      default: '0'
-    },
-    marketVolatilityReaction: {
-      type: String,
-      enum: ['Buy more', 'Sell everything', 'Hold investments, do nothing'],
-      default: 'Buy more'
-    }
-  },
-  { _id: false }
-);
+export const investmentGoalsSchema = new Schema({
+  investmentObjective: { type: String, required: true },
+  investmentHorizon: { type: String, required: true },
+  monthlyIncome: { type: String, required: true },
+  educationLevel: { type: String, required: true },
+  investmentExperience: { type: String, required: true },
+  totalNetWorth: { type: String, required: true },
+  dependents: { type: String, required: true },
+  riskTolerance: { type: String, required: true }
+});
 
 export const passwordHistorySchema = new Schema(
   {
@@ -231,4 +136,3 @@ export const passwordHistorySchema = new Schema(
   },
   { _id: false }
 );
-
