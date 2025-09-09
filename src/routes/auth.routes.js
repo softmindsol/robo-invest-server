@@ -11,6 +11,7 @@ import {
 import {
   changePassword,
   forgotPassword,
+  kycSteps,
   login,
   logout,
   register,
@@ -21,6 +22,7 @@ import {
 } from '../controllers/auth/index.controller.js';
 import { rateLimiter, verifyJWT } from '../middlewares/index.js';
 import { ROLES } from '../constants/index.js';
+import { kycStepsSchema } from '../schemas/kyc.validator.js';
 
 const router = new Router();
 
@@ -29,7 +31,12 @@ router.post('/verify-email', addValidation(verifyEmailSchema), verifyEmail);
 
 router.post('/resend-otp', verifyJWT(ROLES.USER), rateLimiter, resendOTP);
 
-router.post('/kyc-steps', verifyJWT([ROLES.USER]));
+router.post(
+  '/kyc-steps',
+  verifyJWT([ROLES.USER]),
+  addValidation(kycStepsSchema()),
+  kycSteps
+);
 
 router.post('/login', addValidation(loginSchema), login);
 router.post('/logout', verifyJWT([ROLES.USER]), logout);
