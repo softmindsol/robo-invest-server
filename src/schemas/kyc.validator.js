@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { ACCOUNT_TYPES } from '../constants/index.js';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 const personalSchema = (accountType = '') => {
   let schema = Joi.object({
@@ -204,13 +205,16 @@ const beneficiarySchema = (accountType = '') => {
       'any.required': 'Beneficiary address is required.'
     }),
     contactNumber: Joi.string()
-      .pattern(/^\d{4}-\d{7}$/)
+      .custom((value, helpers) => {
+        if (!isValidPhoneNumber(value)) {
+          return helpers.message('Phone Number must be a valid global number');
+        }
+        return value;
+      })
       .required()
       .messages({
-        'string.empty': 'Beneficiary contact number cannot be empty.',
-        'string.pattern':
-          'Beneficiary contact number must be in the format 0300-1234567.',
-        'any.required': 'Beneficiary contact number is required.'
+        'string.base': 'Phone Number must be a valid string',
+        'any.required': 'Phone Number is required'
       })
   });
 
@@ -308,12 +312,12 @@ const beneficiarySchema = (accountType = '') => {
     });
   } else if (accountType === ACCOUNT_TYPES.SAHULAT) {
     schema = schema.keys({
-      isForeigner: Joi.boolean().required().messages({
+      isForeigner: Joi.string().valid('yes', 'no').required().messages({
         'any.required': 'Is Foreigner is required.'
       }),
       passportNumber: Joi.string()
         .when('isForeigner', {
-          is: true,
+          is: 'yes',
           then: Joi.string().required(),
           otherwise: Joi.allow('').optional()
         })
@@ -323,7 +327,7 @@ const beneficiarySchema = (accountType = '') => {
         }),
       placeOfIssue: Joi.string()
         .when('isForeigner', {
-          is: true,
+          is: 'yes',
           then: Joi.string().required(),
           otherwise: Joi.allow('').optional()
         })
@@ -334,7 +338,7 @@ const beneficiarySchema = (accountType = '') => {
       dateOfIssue: Joi.date()
         .iso()
         .when('isForeigner', {
-          is: true,
+          is: 'yes',
           then: Joi.required(),
           otherwise: Joi.allow(null).optional()
         })
@@ -345,7 +349,7 @@ const beneficiarySchema = (accountType = '') => {
       dateOfExpiry: Joi.date()
         .iso()
         .when('isForeigner', {
-          is: true,
+          is: 'yes',
           then: Joi.required(),
           otherwise: Joi.allow(null).optional()
         })
@@ -361,21 +365,14 @@ const beneficiarySchema = (accountType = '') => {
 };
 
 const investmentSchema = Joi.object({
-  objective: Joi.string().required(),
-
-  timeHorizon: Joi.string().required(),
-
+  investmentObjective: Joi.string().required(),
+  investmentHorizon: Joi.string().required(),
   monthlyIncome: Joi.string().required(),
-
   educationLevel: Joi.string().required(),
-
   investmentExperience: Joi.string().required(),
-
   totalNetWorth: Joi.string().required(),
-
-  dependentsOnIncome: Joi.string().required(),
-
-  marketVolatilityReaction: Joi.string().required()
+  dependents: Joi.string().required(),
+  riskTolerance: Joi.string().required()
 });
 
 export const kycStepsSchema = () =>

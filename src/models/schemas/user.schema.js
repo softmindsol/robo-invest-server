@@ -110,13 +110,12 @@ export const beneficiaryDetailsSchema = new Schema(
     hasHighValueDeals: { type: Boolean },
     highValueDealsDetails: { type: String },
 
-    // Conditional for Sahulat account type (Foreigner / Passport)
-    isForeigner: { type: Boolean },
+    isForeigner: { type: String, enum: ['yes', 'no'], default: 'no' },
     passportNumber: { type: String },
     placeOfIssue: { type: String },
     dateOfIssue: { type: Date },
     dateOfExpiry: { type: Date },
-    passportUpload: { type: String } // URL/path
+    passportUpload: { type: String }
   },
   { _id: false }
 );
