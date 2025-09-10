@@ -11,7 +11,6 @@ import {
 import {
   changePassword,
   forgotPassword,
-  kycSteps,
   login,
   logout,
   register,
@@ -23,6 +22,9 @@ import {
 import { rateLimiter, verifyJWT } from '../middlewares/index.js';
 import { ROLES } from '../constants/index.js';
 import { kycStepsSchema } from '../schemas/kyc.validator.js';
+import { upload } from '../utils/cloudinary.js';
+import { kycStepsWithUploads } from '../controllers/auth/kyc.controller.js';
+import { coerceMultipartJson } from '../middlewares/util.middleware.js';
 
 const router = new Router();
 
@@ -31,11 +33,30 @@ router.post('/verify-email', addValidation(verifyEmailSchema), verifyEmail);
 
 router.post('/resend-otp', verifyJWT(ROLES.USER), rateLimiter, resendOTP);
 
+const kycFileFields = [
+  { name: 'personal_cnicFront', maxCount: 1 },
+  { name: 'personal_cnicBack', maxCount: 1 },
+  { name: 'financial_proofOfIncome', maxCount: 1 },
+  { name: 'financial_proofOfEmployment', maxCount: 1 },
+  { name: 'financial_companyLetterhead', maxCount: 1 },
+  { name: 'beneficiary_cnicFront', maxCount: 1 },
+  { name: 'beneficiary_cnicBack', maxCount: 1 },
+  { name: 'beneficiary_passportUpload', maxCount: 1 }
+];
+
 router.post(
   '/kyc-steps',
   verifyJWT([ROLES.USER]),
+  upload.fields(kycFileFields),
+  coerceMultipartJson([
+    'accountType',
+    'personal',
+    'financial',
+    'beneficiary',
+    'investment'
+  ]),
   addValidation(kycStepsSchema()),
-  kycSteps
+  kycStepsWithUploads
 );
 
 router.post('/login', addValidation(loginSchema), login);

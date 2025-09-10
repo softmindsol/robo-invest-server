@@ -30,4 +30,22 @@ const fileDelete = (name, destination) => {
   };
 };
 
+export const coerceMultipartJson =
+  (keys = []) =>
+  (req, _res, next) => {
+    for (const k of keys) {
+      const v = req.body?.[k];
+      if (v === null) continue;
+      if (typeof v === 'string') {
+        try {
+          req.body[k] = JSON.parse(v); // valid JSON text -> object/primitive
+        } catch (e) {
+          // if not JSON, leave as-is
+          console.log(`coerceMultipartJson: key "${k}" is not valid JSON:`, e);
+        }
+      }
+    }
+    next();
+  };
+
 export { objectIdValidator, fileValidator, fileDelete };

@@ -6,13 +6,13 @@ import {
   resetPassword
 } from './reset-password.controller.js';
 import { changePassword } from './change-password.controller.js';
-import { kycSteps } from './kyc.controller.js';
+import { kycStepsWithUploads } from './kyc.controller.js';
 
 export {
   register,
   login,
   logout,
-  kycSteps,
+  kycStepsWithUploads,
   verifyEmail,
   resendOTP,
   forgotPassword,
