@@ -6,7 +6,6 @@ export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const user = req.user;
 
-  // Change password with validation
   await PasswordService.changePassword(user, currentPassword, newPassword);
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'Password changed successfully');

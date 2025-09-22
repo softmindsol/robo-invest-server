@@ -8,7 +8,7 @@ import {
   sendEmail,
   sendResponse
 } from '../../utils/index.js';
-import { generateOtpEmail } from '../../helper/emailTemplates.js';
+import { generateResetPasswordEmail } from '../../helper/emailTemplates.js';
 
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -26,7 +26,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   await sendEmail({
     to: email,
     subject: 'Reset Your Password - Tijori',
-    htmlContent: generateOtpEmail(otp)
+    htmlContent: generateResetPasswordEmail(otp, user.username)
   });
 
   await user.save();
@@ -69,7 +69,6 @@ export const resetPassword = asyncHandler(async (req, res) => {
     'OTP not verified or invalid request'
   );
 
-  // Use PasswordService to reset password with validation
   await PasswordService.resetPassword(user, newPassword);
 
   user.resetPassword = undefined;
