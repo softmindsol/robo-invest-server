@@ -35,7 +35,14 @@ export const personalDetailsSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    cnic: { type: String, required: true, unique: true },
+    cnic: {
+      type: String,
+      required: true,
+      index: {
+        unique: true,
+        sparse: true
+      }
+    },
     issueDate: { type: Date, required: true },
     expireDate: { type: Date, required: true },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
@@ -129,7 +136,8 @@ export const investmentGoalsSchema = new Schema(
     investmentExperience: { type: String, required: true },
     totalNetWorth: { type: String, required: true },
     dependents: { type: String, required: true },
-    riskTolerance: { type: String, required: true }
+    riskTolerance: { type: String, required: true },
+    riskLevel: { type: String, required: true }
   },
   { _id: false }
 );

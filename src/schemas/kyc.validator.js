@@ -372,7 +372,8 @@ const investmentSchema = Joi.object({
   investmentExperience: Joi.string().required(),
   totalNetWorth: Joi.string().required(),
   dependents: Joi.string().required(),
-  riskTolerance: Joi.string().required()
+  riskTolerance: Joi.string().required(),
+  riskLevel: Joi.string().required()
 });
 
 export const kycStepsSchema = () =>
