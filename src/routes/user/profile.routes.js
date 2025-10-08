@@ -4,9 +4,13 @@ import { verifyJWT, multipleUpload } from '../../middlewares/index.js';
 import { ROLES } from '../../constants/index.js';
 import {
   getUserProfile,
+  updateInvestmentRisk,
   updatePersonalInformation
 } from '../../controllers/user/profile.controller.js';
-import { updatePersonalInfoSchema } from '../../schemas/profile.validator.js';
+import {
+  updateInvestmentRiskSchema,
+  updatePersonalInfoSchema
+} from '../../schemas/profile.validator.js';
 
 const router = new Router();
 
@@ -21,6 +25,13 @@ router.put(
   ]),
   addValidation(updatePersonalInfoSchema),
   updatePersonalInformation
+);
+
+router.patch(
+  '/risk',
+  verifyJWT([ROLES.USER]),
+  addValidation(updateInvestmentRiskSchema),
+  updateInvestmentRisk
 );
 
 export default router;

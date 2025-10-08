@@ -80,4 +80,25 @@ const updatePersonalInfoSchema = Joi.object({
   })
 });
 
-export { updatePersonalInfoSchema };
+const ALLOWED_RISK_LEVELS = [
+  'Very Conservative',
+  'Conservative',
+  'Moderate',
+  'Growth',
+  'Aggressive',
+  'Very Aggressive',
+];
+const updateInvestmentRiskSchema = Joi.object({
+  riskLevel: Joi.string()
+    .valid(...ALLOWED_RISK_LEVELS)
+    .required()
+    .messages({
+      'string.base': 'Risk level must be a valid string.',
+      'any.only': `Risk level must be one of the following: ${ALLOWED_RISK_LEVELS.join(
+        ', '
+      )}.`,
+      'any.required': 'Risk level is a required field.',
+    }),
+});
+
+export { updatePersonalInfoSchema, updateInvestmentRiskSchema };

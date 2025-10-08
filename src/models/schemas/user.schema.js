@@ -137,7 +137,7 @@ export const investmentGoalsSchema = new Schema(
     totalNetWorth: { type: String, required: true },
     dependents: { type: String, required: true },
     riskTolerance: { type: String, required: true },
-    riskLevel: { type: String, required: true }
+    riskLevel: { type: String, required: false }
   },
   { _id: false }
 );
