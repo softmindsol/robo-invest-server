@@ -34,9 +34,19 @@ export class UserService {
     return await userDB.findOne({ email }, projection);
   }
 
-  static async findUserById(userId) {
+  static async findUserById(userId, populate = []) {
+    // get the actual user document (not a query)
     const user = await userDB.findById(userId);
+
     checkField(!user, 'User not found', STATUS_CODES.NOT_FOUND);
+
+    // Now safely populate using the document's populate method
+    if (populate.length && typeof user.populate === 'function') {
+      for (const field of populate) {
+        await user.populate(field);
+      }
+    }
+
     return user;
   }
 

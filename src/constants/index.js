@@ -36,8 +36,8 @@ export const ROLES = {
   ADMIN: 'Admin'
 };
 
-export const MAX_LOGIN_ATTEMPTS = 5; // Maximum allowed login attempts
-export const LOCK_TIME = 30 * 60 * 1000; // 30 minutes in milliseconds
+export const MAX_LOGIN_ATTEMPTS = 5;
+export const LOCK_TIME = 30 * 60 * 1000;
 
 export const ACCOUNT_TYPES = {
   NORMAL: 'normal',
@@ -50,8 +50,20 @@ export const SUBSCRIPTION_PLANS = {
 };
 
 export const PLAN_PRICE_IDS = {
-  ROBO_PRO_MONTHLY: 'price_1Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
-  ROBO_PRO_YEARLY: 'price_2Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
-  ROBO_ELITE_MONTHLY: 'price_3Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8', // Replace with actual price ID
-  ROBO_ELITE_YEARLY: 'price_4Hh7Y2Lz4k8Z2Lz4k8Z2Lz4k8' // Replace with actual price ID
+  ROBO_PRO_MONTHLY: {
+    id: 'robo_pro_monthly',
+    amount: 375
+  },
+  ROBO_PRO_YEARLY: {
+    id: 'robo_pro_yearly',
+    amount: 3600
+  },
+  ROBO_ELITE_MONTHLY: {
+    id: 'robo_elite_monthly',
+    amount: 490
+  },
+  ROBO_ELITE_YEARLY: {
+    id: 'robo_elite_yearly',
+    amount: 4704
+  }
 };

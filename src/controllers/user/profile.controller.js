@@ -5,7 +5,7 @@ import { UserService } from '../../services/auth/user.service.js';
 export const getUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const user = await UserService.findUserById(userId);
+  const user = await UserService.findUserById(userId, ['subscription']);
 
   const {
     accessToken,
