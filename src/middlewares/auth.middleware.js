@@ -8,13 +8,10 @@ export const verifyJWT = (roles = []) =>
   asyncHandler(async (req, _, next) => {
     try {
       const token = req.headers.authorization?.split(' ')[1];
-      console.log("🚀 ~ verifyJWT ~ token:", token)
 
       checkField(!token, MESSAGES.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
       const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET);
-      console.log("🚀 ~ verifyJWT ~ decodedToken:", decodedToken)
       const user = await Users.findById(decodedToken?._id).select('-password');
-      console.log("🚀 ~ verifyJWT ~ user:", user)
 
       checkField(!user, MESSAGES.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
 

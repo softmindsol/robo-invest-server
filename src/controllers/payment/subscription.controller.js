@@ -5,7 +5,7 @@ import { STATUS_CODES } from '../../constants/index.js';
 import axios from 'axios';
 import qs from 'querystring';
 import { PaymentService } from '../../services/payment/payment.service.js';
-import crypto from 'crypto'; // <-- ADD THIS LINE
+import crypto from 'crypto';
 
 const MERCHANT_ID = process.env.PAYFAST_MERCHANT_ID;
 const SECURED_KEY = process.env.PAYFAST_SECURED_KEY;
@@ -18,8 +18,6 @@ const POST_URL = process.env.PAYFAST_POST_URL;
 export const subscribeViaPayfast = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { planName, interval } = req.body;
-
-  // ... (User and price details fetching remains the same)
 
   const user = await UserService.findUserById(userId);
   const priceDetails = await SubscriptionService.getPriceId(planName, interval);
@@ -39,22 +37,19 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
   }
 
   const basketId = `sub_${userId}_${Date.now()}`;
-  // Ensure amount is an integer or string with 2 decimal places as required by PayFast
-  const amount = priceDetails.amount || 0; 
+
+  const amount = priceDetails.amount || 0;
   checkField(!amount, 'Invalid plan amount.');
-  
-  // NOTE: For PayFast, often the amount is sent as 'XX.XX' (string with 2 decimals).
-  // I will use the number value as passed by your code, but keep this in mind if issues persist.
-  const txnamt = String(amount); 
-  
-  // STEP 1: Get Access Token
+
+  const txnamt = String(amount);
+
   const tokenResponse = await axios.post(
     TOKEN_URL,
     qs.stringify({
       MERCHANT_ID,
       SECURED_KEY,
       BASKET_ID: basketId,
-      TXNAMT: txnamt, // Use formatted amount
+      TXNAMT: txnamt,
       CURRENCY_CODE: 'PKR'
     }),
     {
@@ -64,7 +59,7 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
       }
     }
   );
-  console.log("🚀 ~ tokenResponse:", tokenResponse.data); // Log actual data, not just the whole object
+  console.log("🚀 ~ tokenResponse:", tokenResponse);
 
   const token = tokenResponse?.data?.ACCESS_TOKEN;
   checkField(!token, 'Failed to generate PayFast access token.');
@@ -79,38 +74,28 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
     interval
   });
 
-  // STEP 2: Calculate SIGNATURE for PostTransaction
-  // NOTE: This is a common pattern for PayFast/IPG. Verify with your docs.
-  const signatureData = [
-      MERCHANT_ID,
-      token,
-      txnamt, // Amount used in the hash
-      SECURED_KEY // Secured Key is essential here
-  ].join('|');
-const SIGNATURE = Math.random().toString(36).slice(2, 15); 
-  
-  // STEP 3: Prepare and send the form
+  const signatureData = [MERCHANT_ID, token, txnamt, SECURED_KEY].join('|');
+  const SIGNATURE = Math.random().toString(36).slice(2, 15);
 
   const formFields = {
     MERCHANT_ID,
     MERCHANT_NAME: 'Tijori',
     TOKEN: token,
-    TXNAMT: txnamt, // Use formatted amount
+    PROCCODE: '00',
+    TXNAMT: txnamt,
     CURRENCY_CODE: 'PKR',
-    BASKET_ID: basketId,
-    ORDER_DATE: new Date().toISOString().slice(0, 10),
-    SIGNATURE: SIGNATURE, // <--- FIXED: Use the calculated signature
+    CUSTOMER_MOBILE_NO: user.personalDetails?.phoneNumber || '0302886109',
+    SIGNATURE: SIGNATURE,
     VERSION: 'MERCHANTCART-0.1',
     TXNDESC: `${planName} (${interval}) subscription`,
     SUCCESS_URL: `${process.env.CLIENT_URL}/subscription/success`,
     FAILURE_URL: `${process.env.CLIENT_URL}/subscription/failure`,
+    BASKET_ID: basketId,
     CHECKOUT_URL: `${process.env.API_URL}/payment/ipn`,
+    ORDER_DATE: new Date().toISOString().slice(0, 10),
     CUSTOMER_EMAIL_ADDRESS: user.email,
-    CUSTOMER_MOBILE_NO: user.personalDetails?.phoneNumber || '0302886109',
-    PROCCODE: '00',
     TRAN_TYPE: 'ECOMM_PURCHASE'
   };
-  console.log("🚀 ~ formFields:", formFields)
 
   const inputs = Object.entries(formFields)
     .map(
@@ -120,16 +105,19 @@ const SIGNATURE = Math.random().toString(36).slice(2, 15);
     .join('\n');
 
   const html = `
-    <p>Redirecting to PayFast...</p>
-    <form id="pf" method="post" action="${POST_URL}">
+     <p>Redirecting to PayFast...</p>
+    <form id='PayFast_payment_form' name='PayFast-payment-form' method="post" action="${POST_URL}" >
       ${inputs}
-      <input type="submit" value="Continue" />
+      <!-- The submit button is now hidden and auto-submitted by script -->
     </form>
+    <script>
+      document.getElementById('PayFast_payment_form').submit();
+    </script>
   `;
+  console.log("🚀 ~ html:", html)
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'Redirect to PayFast', { html });
 });
-
 
 /**
  * @desc Handle PayFast IPN & activate subscription after success
