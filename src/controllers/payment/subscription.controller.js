@@ -59,7 +59,7 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
       }
     }
   );
-  console.log("🚀 ~ tokenResponse:", tokenResponse);
+  console.log('🚀 ~ tokenResponse:', tokenResponse);
 
   const token = tokenResponse?.data?.ACCESS_TOKEN;
   checkField(!token, 'Failed to generate PayFast access token.');
@@ -91,7 +91,7 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
     SUCCESS_URL: `${process.env.CLIENT_URL}/subscription/success`,
     FAILURE_URL: `${process.env.CLIENT_URL}/subscription/failure`,
     BASKET_ID: basketId,
-    CHECKOUT_URL: `${process.env.API_URL}/payment/ipn`,
+    CHECKOUT_URL: `${process.env.API_URL}/api/v1/payment/ipn`,
     ORDER_DATE: new Date().toISOString().slice(0, 10),
     CUSTOMER_EMAIL_ADDRESS: user.email,
     TRAN_TYPE: 'ECOMM_PURCHASE'
@@ -114,9 +114,9 @@ export const subscribeViaPayfast = asyncHandler(async (req, res) => {
       document.getElementById('PayFast_payment_form').submit();
     </script>
   `;
-  console.log("🚀 ~ html:", html)
+  console.log('🚀 ~ html:', html);
 
-  sendResponse(res, STATUS_CODES.SUCCESS, 'Redirect to PayFast', { html });
+  sendResponse(res, STATUS_CODES.SUCCESS, 'Redirect to PayFast', {  });
 });
 
 /**

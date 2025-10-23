@@ -3,6 +3,7 @@ import express from 'express';
 import authRoutes from './auth.routes.js';
 import userProfileRoutes from './user/profile.routes.js';
 import paymentRoutes from './payment/payment.routes.js';
+import jazzcashRoutes from './payment/jazzcash.route.js';
 
 const router = express.Router();
 
@@ -19,6 +20,10 @@ const defaultRoutes = [
   {
     path: '/payment',
     route: paymentRoutes
+  },
+  {
+    path: '/jazzcash',
+    route: jazzcashRoutes
   }
 ];
 
