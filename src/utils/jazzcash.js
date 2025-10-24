@@ -1,63 +1,65 @@
-import crypto from 'crypto';
-import moment from 'moment';
+import pkg from 'jazzcash-checkout';
+import { createHash } from 'crypto';
 
-export const generateJazzcashPayload = (amount, billReference = 'Ref001') => {
-  const {
-    JAZZCASH_MERCHANT_ID,
-    JAZZCASH_PASSWORD,
-    JAZZCASH_INTEGRITY_SALT,
-    JAZZCASH_RETURN_URL
-  } = process.env;
+const { credentials, setData, createRequest } = pkg;
 
-  const datetime = moment().format('YYYYMMDDHHmmss');
+// Validate environment variables
+const requiredEnvVars = ['JAZZCASH_MERCHANT_ID', 'JAZZCASH_PASSWORD', 'JAZZCASH_INTEGRITY_SALT'];
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
-  const payload = {
+if (missingVars.length > 0) {
+  throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+}
+
+// Initialize JazzCash with credentials from environment variables
+credentials({
+  config: {
+    merchantId: process.env.JAZZCASH_MERCHANT_ID,
+    password: process.env.JAZZCASH_PASSWORD,
+    hashKey: process.env.JAZZCASH_INTEGRITY_SALT,
+  },
+  environment: process.env.JAZZCASH_ENVIRONMENT || 'sandbox', // 'sandbox' or 'live'
+});
+
+// Helper function to generate a unique transaction reference number
+const generateTxnRefNo = () => {
+  const timestamp = new Date().toISOString().replace(/[^0-9]/g, '');
+  return `T${timestamp}`;
+};
+
+// Function to generate JazzCash payload
+const generateJazzcashPayload = async (amount, billReference = 'billRef123') => {
+  const data = {
     pp_Version: '1.1',
     pp_TxnType: 'CARD',
     pp_Language: 'EN',
-    pp_MerchantID: JAZZCASH_MERCHANT_ID,
-    pp_Password: JAZZCASH_PASSWORD, // required in payload but NOT in hash
-    pp_TxnRefNo: `T${datetime}`,
-    pp_Amount: (amount * 100).toString(), // in paisa (string)
+    pp_MerchantID: process.env.JAZZCASH_MERCHANT_ID,
+    pp_SubMerchantId: '',
+    pp_TxnRefNo: generateTxnRefNo(),
+    pp_Amount: (amount * 100).toString(), // Convert to paisa (e.g., 1000 PKR = 100000 paisa)
     pp_TxnCurrency: 'PKR',
-    pp_TxnDateTime: datetime,
+    pp_TxnDateTime: new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14),
     pp_BillReference: billReference,
-    pp_Description: 'Payment through JazzCash',
-    pp_ReturnURL: JAZZCASH_RETURN_URL,
-    ppmpf_1: 'Tijori Invest'
+    pp_Description: 'Payment for Tijori Invest',
+    pp_TxnExpiryDateTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .replace(/[^0-9]/g, '')
+      .slice(0, 14), // 3 days expiry
+    pp_ReturnURL: process.env.JAZZCASH_RETURN_URL, // Your callback URL
+    ppmpf_1: 'Tijori Invest',
+    ppmpf_2: '',
+    ppmpf_3: '',
+    ppmpf_4: '',
+    ppmpf_5: '',
   };
 
-  // Fields for hash — do NOT include pp_Password or empty fields
-  const fieldsForHash = [
-    'pp_Amount',
-    'pp_BillReference',
-    'pp_Description',
-    'pp_Language',
-    'pp_MerchantID',
-    'pp_ReturnURL',
-    'pp_TxnCurrency',
-    'pp_TxnDateTime',
-    'pp_TxnRefNo',
-    'pp_TxnType',
-    'pp_Version',
-    'ppmpf_1'
-  ];
+  // Set data in jazzcash-checkout
+  setData(data);
 
-  const hashString =
-    JAZZCASH_INTEGRITY_SALT +
-    '&' +
-    fieldsForHash
-      .map((field) => payload[field])
-      .filter((v) => v !== undefined && v !== null && v !== '')
-      .join('&');
-
-  const secureHash = crypto
-    .createHash('sha256')
-    .update(hashString)
-    .digest('hex')
-    .toUpperCase();
-
-  payload.pp_SecureHash = secureHash;
+  // Generate secure hash using createRequest for PAY
+  const payload = await createRequest('PAY');
 
   return payload;
 };
+
+export { generateJazzcashPayload };

@@ -1,13 +1,9 @@
 import express from 'express';
-import { initiateJazzcashPayment } from '../../controllers/payment/jazzcash.controller.js';
+import { handleJazzcashCallback, initiateJazzcashPayment } from '../../controllers/payment/jazzcash.controller.js';
 
 const router = express.Router();
 
 router.post('', initiateJazzcashPayment);
-router.post('/callback', (req, res) => {
-  console.log('JazzCash callback:', req.body);
-  // Verify hash, update DB, etc.
-  res.send('Payment received!');
-});
+router.post('/callback', handleJazzcashCallback);
 
 export default router;
