@@ -1,19 +1,29 @@
 import crypto from 'crypto';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
+import { addHours } from 'date-fns';
 
 const JAZZCASH_MERCHANT_ID = process.env.JAZZCASH_MERCHANT_ID;
 const JAZZCASH_PASSWORD = process.env.JAZZCASH_PASSWORD;
 const JAZZCASH_RETURN_URL =
   'https://api.tijoriinvest.pk/api/v1/jazzcash/callback';
 const JAZZCASH_INTEGRITY_SALT = process.env.JAZZCASH_INTEGRITY_SALT;
+const timeZone = 'Asia/Karachi';
 
 export function getJazzcashPayload(productName, productPrice = 100) {
   // ERROR FIX 1: Convert amount to paisa/cents
   const amountInPaisa = parseInt(productPrice, 10) * 100;
   const now = new Date();
-  const pp_TxnDateTime = format(now, 'yyyyMMddHHmmss');
-  const expiryDateTime = new Date(now.getTime() + 60 * 60 * 1000); // Add 1 hour
-  const pp_TxnExpiryDateTime = format(expiryDateTime, 'yyyyMMddHHmmss');
+
+  // Format dates in Pakistan Standard Time
+  const pp_TxnDateTime = formatInTimeZone(now, timeZone, 'yyyyMMddHHmmss');
+
+  const expiryDateTime = addHours(now, 1); // Add 1 hour
+  const pp_TxnExpiryDateTime = formatInTimeZone(
+    expiryDateTime,
+    timeZone,
+    'yyyyMMddHHmmss'
+  );
+
   const pp_TxnRefNo = 'T' + pp_TxnDateTime;
 
   const post_data = {
