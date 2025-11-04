@@ -1,0 +1,46 @@
+name: Deploy Backend (Yarn + PM2)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js (you already have Node 20)
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 4️⃣ Copy environment file
+      - name: Copy environment file
+        run: |
+          cp /var/www/robo-invest-envs/robo-invest-server-env .env
+          echo "✅ Environment file copied successfully."
+
+      # 5️⃣ Start or restart backend with PM2
+      - name: Start or Restart backend
+        run: |
+          APP_NAME="backend"
+          # Check if PM2 process exists
+          if pm2 list | grep -q "$APP_NAME"; then
+            echo "🔁 Restarting existing PM2 process: $APP_NAME"
+            pm2 restart "$APP_NAME"
+          else
+            echo "🚀 Starting new PM2 process: $APP_NAME"
+            pm2 start "yarn start" --name "$APP_NAME"
+          fi
+          pm2 save
+          echo "✅ Backend deployed and running with PM2."
