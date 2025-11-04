@@ -34,3 +34,4 @@ jobs:
             pm2 start "yarn start" --name "$APP_NAME"
           fi
           pm2 save
+          
