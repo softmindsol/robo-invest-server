@@ -20,7 +20,7 @@ jobs:
 
       - name: Copy environment file
         run: |
-          cp /var/www/robo-invest-envs/robo-invest-fe-env .env
+          cp /var/www/robo-invest-envs/robo-invest-server-env .env
           echo "✅ Environment file copied."
 
       - name: Start or Restart backend
